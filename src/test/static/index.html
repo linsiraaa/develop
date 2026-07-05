@@ -1,0 +1,912 @@
+<!--<!doctype html>-->
+<!--<html>-->
+<!--<head>-->
+<!--    <meta charset="utf-8">-->
+<!--    <title>河南省交通大数据分析平台</title>-->
+<!--    &lt;!&ndash;设置是否为缩放模式 &ndash;&gt;-->
+<!--    <meta name="viewport" content="width=device-width, initial-scale=1">-->
+<!--    &lt;!&ndash; 新 Bootstrap 核心 CSS 文件 &ndash;&gt;-->
+<!--    <link rel="stylesheet" type="text/css" href="https://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.css">-->
+<!--    &lt;!&ndash; jQuery文件。务必在bootstrap.min.js 之前引入 &ndash;&gt;-->
+<!--    <script src="../../main/resources/static/js/jquery.min.js"></script>-->
+<!--    &lt;!&ndash; 最新的 Bootstrap 核心 JavaScript 文件 &ndash;&gt;-->
+<!--    <script src="../../main/resources/static/js/bootstrap.min.js"></script>-->
+<!--    &lt;!&ndash;echarts JS&ndash;&gt;-->
+<!--    <script src="../../main/resources/static/js/echarts.min.js"></script>-->
+
+<!--    &lt;!&ndash; 轮播swiper文件 &ndash;&gt;-->
+<!--    <link rel="stylesheet" type="text/css" href="../../main/resources/static/css/swiper.min.css">-->
+<!--    <script src="../../main/resources/static/js/swiper.min.js"></script>-->
+<!--    &lt;!&ndash;界面样式&ndash;&gt;-->
+<!--    <script src="visual.js"></script>-->
+<!--    <script src="../../main/resources/static/js/china.js"></script>-->
+<!--    <script src="../../../../target/chartMap.js"></script>-->
+<!--    <link rel="stylesheet" type="text/css" href="../../main/resources/static/css/visual.css">-->
+
+<!--</head>-->
+<!--<body class="ksh">-->
+<!--<div id="load">-->
+<!--    <div class="load_img">&lt;!&ndash; 加载动画 &ndash;&gt;-->
+<!--        <img class="jzxz1" src="../../main/resources/static/images/jzxz1.png">-->
+<!--        <img class="jzxz2" src="../../main/resources/static/images/jzxz2.png">-->
+<!--    </div>-->
+<!--</div>-->
+<!--<div class="head_top">-->
+<!--    <img class="img-responsive" src="../../main/resources/static/images/img_1.png">-->
+
+<!--</div>-->
+<!--<div class="visual">-->
+<!--    <div class="visual_left">-->
+<!--        <div class="visual_box">-->
+<!--            <div class="visual_title">-->
+<!--                <span>交通流量</span>-->
+<!--                <img src="../../main/resources/static/images/ksh33.png">-->
+<!--            </div>-->
+<!--            <div class="visual_chart" id="main1">-->
+
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        <div class="visual_box">-->
+<!--            <div class="visual_title">-->
+<!--                <span>交通工具流量</span>-->
+<!--                <img src="../../main/resources/static/images/ksh33.png">-->
+<!--            </div>-->
+<!--            <div class="visual_chart" id="main2">-->
+
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="visual_box">-->
+<!--            <div class="visual_title">-->
+<!--                <span>客货运量</span>-->
+<!--                <img src="../../main/resources/static/images/ksh33.png">-->
+<!--            </div>-->
+<!--            <div class="visual_chart sfzcll">-->
+<!--                <a>运输方式</a>-->
+<!--                <a>客运量</a>-->
+<!--                <a>货运量</a>-->
+<!--                <div class="sfzcll_pos_box">-->
+<!--                    &lt;!&ndash; 公路运输 &ndash;&gt;-->
+<!--                    <div class="sfzcll_box" data-type="公路运输">-->
+<!--                        <img class="sfzcll_bkJk" src="../../main/resources/static/images/ksh34.png">-->
+<!--                        <img class="sfzcll_bkJk" src="../../main/resources/static/images/ksh34.png">-->
+<!--                        <img class="sfzcll_bkJk" src="../../main/resources/static/images/ksh34.png">-->
+<!--                        <img class="sfzcll_bkJk" src="../../main/resources/static/images/ksh34.png">-->
+<!--                        <label><img src="../../main/resources/static/images/ksh35.png">公路运输</label>-->
+<!--                        <div class="sfzcll_smallBk">-->
+<!--                            <div class="ygl">-->
+<!--                                <span class="passenger-volume">0</span>人-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="sfzcll_smallBk">-->
+<!--                            <div class="ygh">-->
+<!--                                <span class="freight-volume">0</span>吨-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="clear"></div>-->
+<!--                    </div>-->
+
+<!--                    &lt;!&ndash; 铁路运输 &ndash;&gt;-->
+<!--                    <div class="sfzcll_box" data-type="铁路运输">-->
+<!--                        <img class="sfzcll_bkJk" src="../../main/resources/static/images/ksh34.png">-->
+<!--                        <img class="sfzcll_bkJk" src="../../main/resources/static/images/ksh34.png">-->
+<!--                        <img class="sfzcll_bkJk" src="../../main/resources/static/images/ksh34.png">-->
+<!--                        <img class="sfzcll_bkJk" src="../../main/resources/static/images/ksh34.png">-->
+<!--                        <label><img src="../../main/resources/static/images/ksh35.png">铁路运输</label>-->
+<!--                        <div class="sfzcll_smallBk">-->
+<!--                            <div class="ygl">-->
+<!--                                <span class="passenger-volume">0</span>人-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="sfzcll_smallBk">-->
+<!--                            <div class="ygh">-->
+<!--                                <span class="freight-volume">0</span>吨-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="clear"></div>-->
+<!--                    </div>-->
+
+<!--                    &lt;!&ndash; 航空运输 &ndash;&gt;-->
+<!--                    <div class="sfzcll_box" data-type="航空运输">-->
+<!--                        <img class="sfzcll_bkJk" src="../../main/resources/static/images/ksh34.png">-->
+<!--                        <img class="sfzcll_bkJk" src="../../main/resources/static/images/ksh34.png">-->
+<!--                        <img class="sfzcll_bkJk" src="../../main/resources/static/images/ksh34.png">-->
+<!--                        <img class="sfzcll_bkJk" src="../../main/resources/static/images/ksh34.png">-->
+<!--                        <label><img src="../../main/resources/static/images/ksh35.png">航空运输</label>-->
+<!--                        <div class="sfzcll_smallBk">-->
+<!--                            <div class="ygl">-->
+<!--                                <span class="passenger-volume">0</span>人-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="sfzcll_smallBk">-->
+<!--                            <div class="ygh">-->
+<!--                                <span class="freight-volume">0</span>吨-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                        <div class="clear"></div>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--        &lt;!&ndash; 在页面底部添加以下脚本 &ndash;&gt;-->
+<!--        <script>-->
+<!--            $(document).ready(function() {-->
+<!--                // 获取收费站车流量数据（示例）-->
+<!--                function fetchTransportationData() {-->
+<!--                    $.ajax({-->
+<!--                        url: '/api/transportation/summary',  // 后端汇总数据接口-->
+<!--                        type: 'GET',-->
+<!--                        dataType: 'json',-->
+<!--                        success: function(response) {-->
+<!--                            // 更新公路运输数据-->
+<!--                            updateTransportationData('公路运输', response.road);-->
+<!--                            // 更新铁路运输数据-->
+<!--                            updateTransportationData('铁路运输', response.rail);-->
+<!--                            // 更新航空运输数据-->
+<!--                            updateTransportationData('航空运输', response.air);-->
+<!--                        },-->
+<!--                        error: function(xhr, status, error) {-->
+<!--                            console.error('获取交通数据失败:', error);-->
+<!--                            // 设置默认数据（同前）-->
+<!--                            setDefaultData();-->
+<!--                        }-->
+<!--                    });-->
+<!--                }-->
+
+<!--                // 更新页面数据的函数（同前）-->
+<!--                function updateTransportationData(type, data) {-->
+<!--                    $(`.sfzcll_box[data-type="${type}"] .passenger-volume`).text(data.passengerVolume);-->
+<!--                    $(`.sfzcll_box[data-type="${type}"] .freight-volume`).text(data.freightVolume);-->
+<!--                }-->
+
+<!--                // 设置默认数据（同前）-->
+<!--                function setDefaultData() { /* ... */ }-->
+
+<!--                // 初始加载数据-->
+<!--                fetchTransportationData();-->
+<!--                // 每30秒刷新一次-->
+<!--                setInterval(fetchTransportationData, 30000);-->
+<!--            });-->
+<!--        </script>-->
+<!--    </div>-->
+<!--    <div class="visual_con">-->
+<!--        <div class="visual_conTop">-->
+<!--            <div class="visual_conTop_box visual_conTop1">-->
+<!--                <div>-->
+<!--                    <h3>当前警情数(起)</h3>-->
+<!--                    <p>67</p>-->
+<!--                    <div class="conTop_smil">-->
+<!--                        <a class="sz">日环比:<span>+3%</span><i class="fa fa-long-arrow-up"></i></a>-->
+<!--                        <a class="xd">周环比:<span>-2%</span><i class="fa fa-long-arrow-down"></i></a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="visual_conTop_box visual_conTop2">-->
+<!--                <div>-->
+<!--                    <h3>区域拥堵指数</h3>-->
+<!--                    <p>1.4</p>-->
+<!--                    <div class="conTop_smil">-->
+<!--                        <a class="">缓行</a>-->
+<!--                        <a class="">平均车速<span>120</span>KM/H</i></a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="visual_conTop_box visual_conTop1">-->
+<!--                <div>-->
+<!--                    <h3>当前警情数(起)</h3>-->
+<!--                    <p>99</p>-->
+<!--                    <div class="conTop_smil">-->
+<!--                        <a class="sz">日环比:<span>+3%</span><i class="fa fa-long-arrow-up"></i></a>-->
+<!--                        <a class="xd">周环比:<span>-2%</span><i class="fa fa-long-arrow-down"></i></a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="visual_conTop_box visual_conTop2">-->
+<!--                <div>-->
+<!--                    <h3>当前警情数(起)</h3>-->
+<!--                    <p>7421</p>-->
+<!--                    <div class="conTop_smil">-->
+<!--                        <a class="null">null</a>-->
+<!--                        <a class="xd">月环比:<span>-2%</span><i class="fa fa-long-arrow-down"></i></a>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--            <div class="clear"></div>-->
+<!--        </div>-->
+<!--        <div class="visual_conBot">-->
+<!--            <img class="visual_conBot_l" src="../../main/resources/static/images/ksh42.png">-->
+<!--            <img class="visual_conBot_2" src="../../main/resources/static/images/ksh43.png">-->
+<!--            <img class="visual_conBot_3" src="../../main/resources/static/images/ksh44.png">-->
+<!--            <img class="visual_conBot_4" src="../../main/resources/static/images/ksh45.png">-->
+<!--            <div class="visual_chart_text">-->
+<!--                <h1>出行服务+大数据</h1>-->
+<!--                <h2>东海省交通大数据分析平台</h2>-->
+<!--            </div>-->
+<!--            <div class="visual_chart" id="main8"></div>-->
+<!--            <div class="visual_conBot_bot">-->
+<!--                <div class="visualSssf_left">-->
+<!--                    <h3>今日实时收费</h3>-->
+<!--                    <a style="display:block" data-city="all">全省数据</a>-->
+<!--                    <a data-city="郑州">郑州</a>-->
+<!--                    <a data-city="开封">开封</a>-->
+<!--                    <a data-city="洛阳">洛阳</a>-->
+<!--                    <a data-city="新乡">新乡</a>-->
+<!--                    <a data-city="许昌">许昌</a>-->
+<!--                    <a data-city="焦作">焦作</a>-->
+<!--                    <a class="active" data-city="信阳">信阳</a>-->
+<!--                    <a data-city="商丘">商丘</a>-->
+<!--                    <a data-city="长治">长治</a>-->
+<!--                </div>-->
+<!--                <div class="visualSssf_right">-->
+<!--                    <div class="visualSssf_right_box" id="main5"></div>-->
+<!--                    <div class="visualSssf_right_box" id="main6"></div>-->
+<!--                    <div class="visualSssf_right_box" id="main7"></div>-->
+<!--                </div>-->
+<!--                <div class="clear"></div>-->
+<!--                <script src="visual.js"></script>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="visual_right">-->
+<!--        <div class="visual_box">-->
+<!--            <div class="visual_title">-->
+<!--                <span>本月发生事件</span>-->
+<!--                <img src="../../main/resources/static/images/ksh33.png">-->
+<!--            </div>-->
+<!--            <div class="swiper-container visual_swiper1 visual_chart">-->
+<!--                <div class="swiper-wrapper">-->
+<!--                    <div class="swiper-slide"  id="main3"></div>-->
+<!--                    <div class="swiper-slide"  id="main31"></div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--        <div class="visual_box visualSfzsfl">-->
+<!--            <div class="visual_title">-->
+<!--                <span>访豫车辆来源</span>-->
+<!--                <img src="../../main/resources/static/images/ksh33.png">-->
+<!--            </div>-->
+<!--            <div class="visual_chart" id="main9">-->
+
+<!--            </div>-->
+
+<!--        </div>-->
+<!--        <div class="visual_box">-->
+<!--            <div class="visual_title">-->
+<!--                <span>收费站收费情况</span>-->
+<!--                <img src="../../main/resources/static/images/ksh33.png">-->
+<!--            </div>-->
+<!--            <div class="swiper-container visual_swiper2 visual_chart">-->
+<!--                <div class="swiper-wrapper">-->
+<!--                    <div class="swiper-slide"  id="main4"></div>-->
+<!--                    <div class="swiper-slide"  id="main41"></div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--    <div class="clear"></div>-->
+<!--</div>-->
+<!--<script type="text/javascript">-->
+<!--    $(function(){-->
+<!--        var a=$('.visualSssf_left a')-->
+<!--        for(var i=0;i<a.length;i++){-->
+<!--            a[i].index=i;-->
+<!--            a[i].onclick=function(){-->
+<!--                for(var i=0;i<a.length;i++){-->
+<!--                    a[i].className=''-->
+<!--                }-->
+<!--                this.className='active'-->
+<!--            }-->
+<!--        }-->
+
+<!--        var sfzcllH=$('.sfzcll_box').height()-->
+<!--        var sfzcllHtwo=sfzcllH-2-->
+<!--        $('.sfzcll_box').css('line-height',sfzcllH+'px')-->
+<!--        $('.sfzcll_smallBk>div').css('line-height',sfzcllHtwo+'px')-->
+
+<!--        //删除加载动画-->
+<!--        $('#load').fadeOut(1000)-->
+<!--        setTimeout(function(){-->
+<!--                $('#load').remove()-->
+<!--            }-->
+<!--            ,1100);-->
+<!--    })-->
+
+<!--    //交通流量-->
+<!--    $.ajax({-->
+<!--        url: '/api/traffic/flow',-->
+<!--        type: 'GET',-->
+<!--        success: function(response) {-->
+<!--            var data = response; // 后端返回的 Map 结构-->
+
+<!--            // 空数据校验（关键！避免 undefined 报错）-->
+<!--            if (!data || !data.years || !data.highwayValues || !data.urbanValues) {-->
+<!--                console.error('交通流量数据不完整，无法渲染图表');-->
+<!--                return;-->
+<!--            }-->
+
+<!--            // 确保数据长度一致（年份-流量一一对应）-->
+<!--            if (data.years.length !== data.highwayValues.length ||-->
+<!--                data.years.length !== data.urbanValues.length) {-->
+<!--                console.error('年份与流量数据长度不一致，无法渲染图表');-->
+<!--                return;-->
+<!--            }-->
+
+<!--            // 配置项（核心修改点已标注）-->
+<!--            var option1 = {-->
+<!--                title: {-->
+<!--                    show: false,-->
+<!--                    text: '交通流量',-->
+<!--                    subtext: '单位：万辆',-->
+<!--                    link: '1111'-->
+<!--                },-->
+<!--                tooltip: {-->
+<!--                    trigger: 'axis',-->
+<!--                    formatter: function(params) {-->
+<!--                        var time = params[0].name.replace(/-/g, '年') + '月<br/>'; // 格式化年份-月份（如 "2023-09" → "2023年09月"）-->
+<!--                        var str = '';-->
+<!--                        params.forEach(function(item) {-->
+<!--                            if (item.data === null || item.data === 'null') {-->
+<!--                                str += item.seriesName + '：无数据<br/>';-->
+<!--                            } else {-->
+<!--                                // 环比/同比添加 "%" 符号（区分柱状图和折线图）-->
+<!--                                var unit = (item.seriesName === '环比' || item.seriesName === '同比') ? '%' : '万辆';-->
+<!--                                str += item.seriesName + '：' + item.data.toFixed(1) + unit + '<br/>'; // 保留1位小数-->
+<!--                            }-->
+<!--                        });-->
+<!--                        return time + str;-->
+<!--                    },-->
+<!--                    axisPointer: { type: 'none' }-->
+<!--                },-->
+<!--                legend: {-->
+<!--                    right: '30%',-->
+<!--                    top: 0,-->
+<!--                    itemGap: 16,-->
+<!--                    itemWidth: 10,-->
+<!--                    itemHeight: 10,-->
+<!--                    data: ['高速公路', '城镇公路', '环比', '同比'], // 新增环比、同比图例-->
+<!--                    textStyle: {-->
+<!--                        color: '#fff',-->
+<!--                        fontSize: 12,-->
+<!--                        fontFamily: '微软雅黑'-->
+<!--                    }-->
+<!--                },-->
+<!--                grid: {-->
+<!--                    x: 0,-->
+<!--                    y: 30,-->
+<!--                    x2: 0,-->
+<!--                    y2: 25,-->
+<!--                },-->
+<!--                xAxis: {-->
+<!--                    type: 'category',-->
+<!--                    data: data.years, // 直接使用后端返回的 years（如 ["2023-09", "2024-03", ...]）-->
+<!--                    axisTick: { show: false },-->
+<!--                    axisLine: { show: false },-->
+<!--                    axisLabel: {-->
+<!--                        show: true,-->
+<!--                        interval: 0, // 全部显示（数据量少时）-->
+<!--                        textStyle: {-->
+<!--                            fontSize: 12,-->
+<!--                            color: '#fff',-->
+<!--                            padding: [5, 0, 0, 0] // 调整标签间距-->
+<!--                        },-->
+<!--                        // 简化格式化（原复杂逻辑不再需要）-->
+<!--                        formatter: function(value) {-->
+<!--                            return value.replace(/-/g, '年') + '月'; // 如 "2023-09" → "2023年09月"-->
+<!--                        }-->
+<!--                    }-->
+<!--                },-->
+<!--                yAxis: [-->
+<!--                    // 主坐标轴（左侧，单位：万辆）-->
+<!--                    {-->
+<!--                        type: 'value',-->
+<!--                        name: '万辆',-->
+<!--                        nameTextStyle: { color: '#fff' },-->
+<!--                        axisLine: { show: false },-->
+<!--                        axisTick: { show: false },-->
+<!--                        axisLabel: {-->
+<!--                            show: true,-->
+<!--                            color: '#fff',-->
+<!--                            fontSize: 12-->
+<!--                        },-->
+<!--                        splitLine: {-->
+<!--                            show: true,-->
+<!--                            lineStyle: { color: '#F1F3F5' }-->
+<!--                        },-->
+<!--                        min: 0 // 从0开始避免负数-->
+<!--                    },-->
+<!--                    // 次坐标轴（右侧，单位：%）-->
+<!--                    {-->
+<!--                        type: 'value',-->
+<!--                        name: '%',-->
+<!--                        nameTextStyle: { color: '#fff' },-->
+<!--                        axisLine: { show: true, lineStyle: { color: '#fd6665' } }, // 与环比颜色一致-->
+<!--                        axisLabel: {-->
+<!--                            show: true,-->
+<!--                            color: '#fff',-->
+<!--                            fontSize: 12,-->
+<!--                            formatter: '{value}%' // 显示百分号-->
+<!--                        },-->
+<!--                        splitLine: { show: false } // 不显示网格线-->
+<!--                    }-->
+<!--                ],-->
+<!--                series: [-->
+<!--                    // 高速公路（柱状图，主坐标轴）-->
+<!--                    {-->
+<!--                        name: '高速公路',-->
+<!--                        type: 'bar',-->
+<!--                        barGap: '0.5px',-->
+<!--                        data: data.highwayValues, // 直接使用后端返回的 highwayValues-->
+<!--                        barWidth: 12,-->
+<!--                        itemStyle: {-->
+<!--                            barBorderRadius: 0,-->
+<!--                            borderWidth: 1,-->
+<!--                            borderColor: '#ddd',-->
+<!--                            color: '#009883'-->
+<!--                        },-->
+<!--                        label: {-->
+<!--                            show: false, // 显示数值标签-->
+<!--                            position: 'top',-->
+<!--                            formatter: function(params) {-->
+<!--                                return params.value.toFixed(1) + '万辆'; // 保留1位小数-->
+<!--                            },-->
+<!--                            textStyle: {-->
+<!--                                color: '#000',-->
+<!--                                fontSize: 11,-->
+<!--                                fontFamily: '微软雅黑'-->
+<!--                            }-->
+<!--                        }-->
+<!--                    },-->
+<!--                    // 城镇公路（柱状图，主坐标轴）-->
+<!--                    {-->
+<!--                        name: '城镇公路',-->
+<!--                        type: 'bar',-->
+<!--                        barGap: '0.5px',-->
+<!--                        data: data.urbanValues, // 直接使用后端返回的 urbanValues-->
+<!--                        barWidth: 12,-->
+<!--                        itemStyle: {-->
+<!--                            barBorderRadius: 0,-->
+<!--                            borderWidth: 1,-->
+<!--                            borderColor: '#ddd',-->
+<!--                            color: '#e66922'-->
+<!--                        },-->
+<!--                        label: {-->
+<!--                            show: false,-->
+<!--                            position: 'top',-->
+<!--                            formatter: function(params) {-->
+<!--                                return params.value.toFixed(1) + '万辆';-->
+<!--                            },-->
+<!--                            textStyle: {-->
+<!--                                color: '#000',-->
+<!--                                fontSize: 11,-->
+<!--                                fontFamily: '微软雅黑'-->
+<!--                            }-->
+<!--                        }-->
+<!--                    },-->
+<!--                    // 环比（折线图，次坐标轴）-->
+<!--                    {-->
+<!--                        name: '环比',-->
+<!--                        type: 'line',-->
+<!--                        yAxisIndex: 1, // 指向右侧坐标轴（%）-->
+<!--                        data: [data.momData.highway, data.momData.urban], // 后端返回的环比数据-->
+<!--                        symbol: 'circle',-->
+<!--                        symbolSize: 8,-->
+<!--                        itemStyle: { color: '#fd6665' },-->
+<!--                        lineStyle: { width: 2, type: 'solid' },-->
+<!--                        label: {-->
+<!--                            show: false,-->
+<!--                            formatter: function(params) {-->
+<!--                                return params.value.toFixed(1) + '%'; // 显示百分号-->
+<!--                            },-->
+<!--                            position: 'top'-->
+<!--                        }-->
+<!--                    },-->
+<!--                    // 同比（折线图，次坐标轴）-->
+<!--                    {-->
+<!--                        name: '同比',-->
+<!--                        type: 'line',-->
+<!--                        yAxisIndex: 1, // 指向右侧坐标轴（%）-->
+<!--                        data: [data.yoyData.highway, data.yoyData.urban], // 后端返回的同比数据-->
+<!--                        symbol: 'circle',-->
+<!--                        symbolSize: 8,-->
+<!--                        itemStyle: { color: '#fba73b' },-->
+<!--                        lineStyle: { width: 2, type: 'solid' },-->
+<!--                        label: {-->
+<!--                            show: false,-->
+<!--                            formatter: function(params) {-->
+<!--                                return params.value.toFixed(1) + '%';-->
+<!--                            },-->
+<!--                            position: 'top'-->
+<!--                        }-->
+<!--                    }-->
+<!--                ]-->
+<!--            };-->
+
+<!--            // 初始化图表-->
+<!--            var myChart1 = echarts.init(document.getElementById('main1'));-->
+<!--            myChart1.setOption(option1);-->
+<!--        },-->
+<!--        error: function(error) {-->
+<!--            console.error('获取交通流量数据失败:', error);-->
+<!--        }-->
+<!--    });-->
+<!--    // 交通工具流量-->
+<!--    // 加载数据-->
+<!--    var myChart2 = echarts.init(document.getElementById('main2')); // 假设存在id为main的div-->
+<!--    var option2 = {-->
+<!--        title: {-->
+<!--            text: "",-->
+<!--            left: 'center',-->
+<!--            textStyle: {-->
+<!--                color: '#fff',-->
+<!--                fontSize: 16-->
+<!--            }-->
+<!--        },-->
+<!--        subtext: '客货运量',-->
+<!--        subtextStyle: {-->
+<!--            color: '#fff',-->
+<!--            fontSize: 12,-->
+<!--            fontWeight: 'normal'-->
+<!--        },-->
+<!--        color: ['#89BD1B', '#4A90E2', '#E64340'],-->
+<!--        tooltip: {//鼠标指上时的标线-->
+<!--            trigger: 'axis',-->
+<!--            axisPointer: {-->
+<!--                lineStyle: {-->
+<!--                    color: '#fff'-->
+<!--                }-->
+<!--            },-->
+<!--            formatter: function(params) {-->
+<!--                var result = params[0].name + '<br/>';-->
+<!--                params.forEach(function(item) {-->
+<!--                    // 根据系列名称确定颜色-->
+<!--                    var color;-->
+<!--                    if (item.seriesName === '小型车') {-->
+<!--                        color = '#89BD1B';-->
+<!--                    } else if (item.seriesName === '中型车') {-->
+<!--                        color = '#4A90E2';-->
+<!--                    } else if (item.seriesName === '大型车') {-->
+<!--                        color = '#E64340';-->
+<!--                    }-->
+
+<!--                    // 添加到结果字符串-->
+<!--                    result += '<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color:' + color + '"></span>' +-->
+<!--                        item.seriesName + ': ' + item.value + '<br/>';-->
+<!--                });-->
+<!--                return result;-->
+<!--            }-->
+<!--        },-->
+<!--        legend: {-->
+<!--            icon: 'rect',-->
+<!--            itemWidth: 14,-->
+<!--            itemHeight: 5,-->
+<!--            itemGap: 13,-->
+<!--            data: ['小型车', '中型车', '大型车'],-->
+<!--            right: '10px',-->
+<!--            top: '0px',-->
+<!--            textStyle: {-->
+<!--                fontSize: 12,-->
+<!--                color: '#fff'-->
+<!--            }-->
+<!--        },-->
+<!--        grid: {-->
+<!--            x: 35,-->
+<!--            y: 50,-->
+<!--            x2: 8,-->
+<!--            y2: 30,-->
+<!--        },-->
+<!--        xAxis: [{-->
+<!--            type: 'category',-->
+<!--            boundaryGap: false,-->
+<!--            axisLine: {-->
+<!--                lineStyle: {-->
+<!--                    color: '#57617B'-->
+<!--                }-->
+<!--            },-->
+<!--            axisLabel: {-->
+<!--                textStyle: {-->
+<!--                    color: '#fff'-->
+<!--                }-->
+<!--            },-->
+<!--            axisTick: {-->
+<!--                show: false-->
+<!--            },-->
+<!--            data: [] // 初始化为空数组-->
+<!--        }],-->
+<!--        yAxis: [{-->
+<!--            type: 'value',-->
+<!--            axisTick: {-->
+<!--                show: false-->
+<!--            },-->
+<!--            axisLine: {-->
+<!--                lineStyle: {-->
+<!--                    color: '#57617B'-->
+<!--                }-->
+<!--            },-->
+<!--            axisLabel: {-->
+<!--                margin: 10,-->
+<!--                textStyle: {-->
+<!--                    fontSize: 14,-->
+<!--                    color: '#fff'-->
+<!--                }-->
+<!--            },-->
+<!--            splitLine: {-->
+<!--                lineStyle: {-->
+<!--                    color: '#57617B'-->
+<!--                }-->
+<!--            }-->
+<!--        }],-->
+<!--        series: [] // 初始化为空数组-->
+<!--    };-->
+
+<!--    // 加载数据-->
+<!--    function loadData() {-->
+<!--        $.ajax({-->
+<!--            url: '/api/toll/data',-->
+<!--            type: 'GET',-->
+<!--            success: function(response) {-->
+<!--                // 更新X轴数据-->
+<!--                option2.xAxis[0].data = response.month;-->
+
+<!--                // 更新系列数据-->
+<!--                option2.series = Object.entries(response.seriesData).map(([name, values]) => ({-->
+<!--                    name,-->
+<!--                    type: 'line',-->
+<!--                    smooth: true,-->
+<!--                    symbol: 'circle',-->
+<!--                    symbolSize: 6,-->
+<!--                    lineStyle: {-->
+<!--                        normal: {-->
+<!--                            width: 2-->
+<!--                        }-->
+<!--                    },-->
+<!--                    itemStyle: {-->
+<!--                        normal: {-->
+<!--                            color: name === '小型车' ? '#89BD1B' :-->
+<!--                                name === '中型车' ? '#4A90E2' : '#E64340'-->
+<!--                        }-->
+<!--                    },-->
+<!--                    areaStyle: {-->
+<!--                        normal: {-->
+<!--                            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [-->
+<!--                                { offset: 0, color: 'rgba(137, 189, 27, 0.1)' },-->
+<!--                                { offset: 0.8, color: 'rgba(137, 189, 27, 0)' }-->
+<!--                            ], false),-->
+<!--                            shadowColor: 'rgba(0, 0, 0, 0.1)',-->
+<!--                            shadowBlur: 10-->
+<!--                        }-->
+<!--                    },-->
+<!--                    data: values-->
+<!--                }));-->
+
+<!--                // 应用配置-->
+<!--                myChart2.setOption(option2);-->
+<!--            },-->
+<!--            error: function() {-->
+<!--                alert('数据加载失败');-->
+<!--            }-->
+<!--        });-->
+<!--    }-->
+
+<!--    // 页面加载时初始化-->
+<!--    $(document).ready(function() {-->
+<!--        loadData();-->
+<!--    });-->
+
+<!--    //本月发生事件-->
+<!--    // 本月发生事件-->
+<!--    $.ajax({-->
+<!--        url: '/api/accident/stats',-->
+<!--        type: 'GET',-->
+<!--        success: function(response) {-->
+<!--            var alertCount = response.currentAlertCount;-->
+<!--            var momRate = response.momRate;-->
+<!--            var wowRate = response.wowRate;-->
+<!--            var eventTypeCounts = response.eventTypeCounts;-->
+
+<!--            // 处理事件类型数据-->
+<!--            var data = [];-->
+<!--            var colors = ['#e9df3d', '#f79c19', '#21fcd6', '#08c8ff', '#df4131'];-->
+<!--            var names = [];-->
+
+<!--            var i = 0;-->
+<!--            for (var key in eventTypeCounts) {-->
+<!--                if (i < 5 && eventTypeCounts[key] > 0) {-->
+<!--                    data.push({-->
+<!--                        name: key,-->
+<!--                        value: eventTypeCounts[key]-->
+<!--                    });-->
+<!--                    names.push(key);-->
+<!--                    i++;-->
+<!--                }-->
+<!--            }-->
+
+<!--            // 如果没有足够的数据，添加默认值-->
+<!--            while (data.length < 5) {-->
+<!--                data.push({-->
+<!--                    name: (data.length === 0 ? "其他" : "未知"),-->
+<!--                    value: 10-->
+<!--                });-->
+<!--                names.push((data.length === 0 ? "其他" : "未知"));-->
+<!--            }-->
+
+<!--            // 计算最大值-->
+<!--            var maxValue = Math.max.apply(Math, data.map(function(item) { return item.value; }));-->
+
+<!--            // 准备雷达图数据-->
+<!--            var renderData = [{-->
+<!--                value: Array(5).fill(maxValue),-->
+<!--                name: "告警类型TOP5",-->
+<!--                symbol: 'none',-->
+<!--                lineStyle: {-->
+<!--                    normal: {-->
+<!--                        color: '#ecc03e',-->
+<!--                        width: 2-->
+<!--                    }-->
+<!--                },-->
+<!--                areaStyle: {-->
+<!--                    normal: {-->
+<!--                        color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{-->
+<!--                            offset: 0,-->
+<!--                            color: 'rgba(203, 158, 24, 0.8)'-->
+<!--                        }, {-->
+<!--                            offset: 1,-->
+<!--                            color: 'rgba(190, 96, 20, 0.8)'-->
+<!--                        }], false)-->
+<!--                    }-->
+<!--                }-->
+<!--            }];-->
+
+<!--            var indicator = [];-->
+<!--            data.forEach(function(item, index) {-->
+<!--                renderData.push({-->
+<!--                    value: Array(5).fill(maxValue),-->
+<!--                    symbol: 'circle',-->
+<!--                    symbolSize: 12,-->
+<!--                    lineStyle: {-->
+<!--                        normal: {-->
+<!--                            color: 'transparent'-->
+<!--                        }-->
+<!--                    },-->
+<!--                    itemStyle: {-->
+<!--                        normal: {-->
+<!--                            color: colors[index % colors.length]-->
+<!--                        }-->
+<!--                    }-->
+<!--                });-->
+
+<!--                indicator.push({-->
+<!--                    name: item.name,-->
+<!--                    max: maxValue,-->
+<!--                    color: '#fff'-->
+<!--                });-->
+<!--            });-->
+
+<!--            // 设置选项-->
+<!--            option3 = {-->
+<!--                title: {-->
+<!--                    // text: '本月发生事件',-->
+<!--                    // subtext: '总警情数: ' + alertCount + '起<br>日环比: ' + momRate.toFixed(1) + '%<br>周环比: ' + wowRate.toFixed(1) + '%',-->
+<!--                    left: 'center',-->
+<!--                    textStyle: {-->
+<!--                        color: '#fff',-->
+<!--                        fontSize: 14-->
+<!--                    }-->
+<!--                },-->
+<!--                tooltip: {-->
+<!--                    show: true,-->
+<!--                    trigger: "item"-->
+<!--                },-->
+<!--                radar: {-->
+<!--                    center: ["50%", "50%"],-->
+<!--                    radius: "80%",-->
+<!--                    startAngle: 40,-->
+<!--                    splitNumber: 4,-->
+<!--                    shape: "circle",-->
+<!--                    splitArea: {-->
+<!--                        areaStyle: {-->
+<!--                            color: 'transparent'-->
+<!--                        }-->
+<!--                    },-->
+<!--                    axisLabel: {-->
+<!--                        show: false,-->
+<!--                        fontSize: 20,-->
+<!--                        color: "#000",-->
+<!--                        fontStyle: "normal",-->
+<!--                        fontWeight: "normal"-->
+<!--                    },-->
+<!--                    axisLine: {-->
+<!--                        show: true,-->
+<!--                        lineStyle: {-->
+<!--                            color: "rgba(255, 255, 255, 0.5)"-->
+<!--                        }-->
+<!--                    },-->
+<!--                    splitLine: {-->
+<!--                        show: true,-->
+<!--                        lineStyle: {-->
+<!--                            color: "rgba(255, 255, 255, 0.5)"-->
+<!--                        }-->
+<!--                    },-->
+<!--                    indicator: indicator-->
+<!--                },-->
+<!--                series: [{-->
+<!--                    type: "radar",-->
+<!--                    data: renderData-->
+<!--                }]-->
+<!--            };-->
+
+<!--            var myChart3 = echarts.init(document.getElementById('main3'));-->
+<!--            myChart3.setOption(option3);-->
+
+<!--            // 添加第二个雷达图-->
+<!--            var option31 = {-->
+<!--                title: {-->
+<!--                    text: '事件类型分布',-->
+<!--                    subtext: '单位: 起',-->
+<!--                    left: 'center',-->
+<!--                    textStyle: {-->
+<!--                        color: '#fff',-->
+<!--                        fontSize: 14-->
+<!--                    }-->
+<!--                },-->
+<!--                tooltip: {-->
+<!--                    trigger: 'item',-->
+<!--                    formatter: '{a} <br/>{b}: {c} ({d}%)'-->
+<!--                },-->
+<!--                legend: {-->
+<!--                    orient: 'vertical',-->
+<!--                    right: 10,-->
+<!--                    top: 'center',-->
+<!--                    data: names,-->
+<!--                    textStyle: {-->
+<!--                        color: '#fff'-->
+<!--                    }-->
+<!--                },-->
+<!--                series: [-->
+<!--                    {-->
+<!--                        name: '事件类型',-->
+<!--                        type: 'pie',-->
+<!--                        radius: ['50%', '70%'],-->
+<!--                        avoidLabelOverlap: false,-->
+<!--                        label: {-->
+<!--                            show: false,-->
+<!--                            position: 'center'-->
+<!--                        },-->
+<!--                        emphasis: {-->
+<!--                            label: {-->
+<!--                                show: true,-->
+<!--                                fontSize: '18',-->
+<!--                                fontWeight: 'bold'-->
+<!--                            }-->
+<!--                        },-->
+<!--                        labelLine: {-->
+<!--                            show: false-->
+<!--                        },-->
+<!--                        data: data-->
+<!--                    }-->
+<!--                ]-->
+<!--            };-->
+
+<!--            var myChart31 = echarts.init(document.getElementById('main31'));-->
+<!--            myChart31.setOption(option31);-->
+<!--        },-->
+<!--        error: function(error) {-->
+<!--            console.error('获取本月发生事件数据失败:', error);-->
+<!--        }-->
+<!--    });-->
+<!--    //收费站收费排行-->
+<!--    var myChart4 = echarts.init(document.getElementById('main4'));-->
+<!--    myChart4.setOption(option4)-->
+<!--    var myChart41 = echarts.init(document.getElementById('main41'));-->
+<!--    myChart41.setOption(option41);-->
+<!--    //今日实时收费-->
+
+<!--    //中间地图-->
+<!--    var myChart8 = echarts.init(document.getElementById('main8'));-->
+<!--    myChart8.setOption(option8);-->
+<!--    //访豫车辆来源-->
+<!--    var myChart9 = echarts.init(document.getElementById('main9'));-->
+<!--    myChart9.setOption(option9);-->
+<!--</script>-->
+<!--</body>-->
+<!--</html>-->

@@ -1,0 +1,958 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>河南省交通大数据分析平台</title>
+    <!--设置是否为缩放模式 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link rel="stylesheet" type="text/css" href="https://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.css">
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="js/jquery.min.js"></script>
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="js/bootstrap.min.js"></script>
+    <!--echarts JS-->
+    <script src="js/echarts.min.js"></script>
+
+    <!-- 轮播swiper文件 -->
+    <link rel="stylesheet" type="text/css" href="css/swiper.min.css">
+    <script src="js/swiper.min.js"></script>
+    <!--界面样式-->
+    <script src="js/visual.js"></script>
+    <script src="js/china.js"></script>
+    <script src="js/chartMap.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/visual.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+</head>
+<body class="ksh">
+<div id="load">
+    <div class="load_img"><!-- 加载动画 -->
+        <img class="jzxz1" src="images/jzxz1.png">
+        <img class="jzxz2" src="images/jzxz2.png">
+    </div>
+</div>
+<div class="head_top">
+    <img class="img-responsive" src="images/jcdsj_logo3.gif">
+
+</div>
+<div class="visual">
+    <div class="visual_left">
+        <div class="visual_box">
+            <div class="visual_title">
+                <span>交通流量</span>
+                <img src="images/ksh33.png">
+            </div>
+            <div class="visual_chart" id="main1">
+
+            </div>
+        </div>
+
+        <div class="visual_box">
+            <div class="visual_title">
+                <span>交通工具流量</span>
+                <img src="images/ksh33.png">
+            </div>
+            <div class="visual_chart" id="main2">
+
+            </div>
+        </div>
+        <div class="visual_box">
+            <div class="visual_title">
+                <span>客货运量</span>
+                <img src="images/ksh33.png">
+            </div>
+            <div class="visual_chart sfzcll">
+                <a>运输方式</a>
+                <a>客运量</a>
+                <a>货运量</a>
+                <div class="sfzcll_pos_box">
+
+                    <div class="sfzcll_box" data-type="大型车">
+                        <img class="sfzcll_bkJk" src="images/ksh34.png">
+                        <img class="sfzcll_bkJk" src="images/ksh34.png">
+                        <img class="sfzcll_bkJk" src="images/ksh34.png">
+                        <img class="sfzcll_bkJk" src="images/ksh34.png">
+                        <label><img src="images/ksh35.png">大型车</label>
+                        <div class="sfzcll_smallBk">
+                            <div class="ygl">
+                                <span class="passenger-volume">0</span>人
+                            </div>
+                        </div>
+                        <div class="sfzcll_smallBk">
+                            <div class="ygh">
+                                <span class="freight-volume">0</span>吨
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+
+
+                    <div class="sfzcll_box" data-type="中型车">
+                        <img class="sfzcll_bkJk" src="images/ksh34.png">
+                        <img class="sfzcll_bkJk" src="images/ksh34.png">
+                        <img class="sfzcll_bkJk" src="images/ksh34.png">
+                        <img class="sfzcll_bkJk" src="images/ksh34.png">
+                        <label><img src="images/ksh35.png">中型车</label>
+                        <div class="sfzcll_smallBk">
+                            <div class="ygl">
+                                <span class="passenger-volume">0</span>人
+                            </div>
+                        </div>
+                        <div class="sfzcll_smallBk">
+                            <div class="ygh">
+                                <span class="freight-volume">0</span>吨
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+
+
+                    <div class="sfzcll_box" data-type="小型车">
+                        <img class="sfzcll_bkJk" src="images/ksh34.png">
+                        <img class="sfzcll_bkJk" src="images/ksh34.png">
+                        <img class="sfzcll_bkJk" src="images/ksh34.png">
+                        <img class="sfzcll_bkJk" src="images/ksh34.png">
+                        <label><img src="images/ksh35.png">小型车</label>
+                        <div class="sfzcll_smallBk">
+                            <div class="ygl">
+                                <span class="passenger-volume">0</span>人
+                            </div>
+                        </div>
+                        <div class="sfzcll_smallBk">
+                            <div class="ygh">
+                                <span class="freight-volume">0</span>吨
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 在页面底部添加以下脚本 -->
+        // 在页面底部添加以下脚本
+
+        <script>
+            $(document).ready(function() {
+                // 获取车型客货运量数据
+                function fetchVehicleFreightData() {
+                    $.ajax({
+                        url: '/api/vehicle/summary',  // 后端接口
+                        type: 'GET',
+                        dataType: 'json',
+                        success: function(response) {
+                            // 更新大型车数据（后端返回键为"large"）
+                            updateVehicleData('大型车', response.large);
+                            // 更新中型车数据（后端返回键为"medium"）
+                            updateVehicleData('中型车', response.medium);
+                            // 更新小型车数据（后端返回键为"small"）
+                            updateVehicleData('小型车', response.small);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('获取车型数据失败:', error);
+                            setDefaultData();  // 异常时重置为0
+                        }
+                    });
+                }
+
+                // 更新页面数据的函数（兼容空值）
+                function updateVehicleData(type, data) {
+                    if (!data) data = { passengerVolume: 0, freightVolume: 0 };  // 防止undefined
+                    $(`.sfzcll_box[data-type="${type}"] .passenger-volume`).text(data.passengerVolume || 0);
+                    $(`.sfzcll_box[data-type="${type}"] .freight-volume`).text(data.freightVolume || 0);
+                }
+
+                // 设置默认数据（初始化或异常时调用）
+                function setDefaultData() {
+                    $('.sfzcll_box .passenger-volume').text('0');
+                    $('.sfzcll_box .freight-volume').text('0');
+                }
+
+                // 初始加载数据
+                fetchVehicleFreightData();
+                // 每30秒刷新一次
+                setInterval(fetchVehicleFreightData, 2000);
+            });
+        </script>
+    </div>
+    <div class="visual_con">
+        <!-- 在原有HTML结构上仅添加ID -->
+        <!-- 在原有HTML结构上仅添加ID -->
+        <div class="visual_conTop">
+            <!-- 警情数1 -->
+            <div class="visual_conTop_box visual_conTop1">
+                <div>
+                    <h3>当前警情数(起)</h3>
+                    <p id="police-count1">67</p>
+                    <div class="conTop_smil">
+                        <a class="sz">日环比:<span id="daily-change1">+3%</span><i id="daily-icon1" class="fa fa-long-arrow-up"></i></a>
+                        <a class="xd">周环比:<span id="weekly-change1">-2%</span><i id="weekly-icon1" class="fa fa-long-arrow-down"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 拥堵指数 -->
+            <div class="visual_conTop_box visual_conTop2">
+                <div>
+                    <h3>区域拥堵指数</h3>
+                    <p id="congestion-index">1.4</p>
+                    <div class="conTop_smil">
+                        <a id="congestion-status">缓行</a>
+                        <a class="xd">平均车速<span id="avg-speed">120</span></a>
+                    </div>
+                </div>
+            </div>
+            <div class="visual_conTop_box visual_conTop1">
+                <div>
+                    <h3>堵车路段通行效率</h3>
+                    <p id="efficiency-value">85</p>
+                    <div class="conTop_smil">
+                        <a>平均等待:
+                            <a class="xd"><span id="avg-wait">5</span></a><a>分钟</a>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 异常事件 -->
+            <div class="visual_conTop_box visual_conTop2">
+                <div>
+                    <h3>本月异常事件数</h3>
+                    <p id="incident-count">12</p>
+                    <div class="conTop_smil">
+                        <a class="sz">今日新增: <span id="today-incidents">3</span></a>
+                        <a class="xd">已处理: <span id="resolved-incidents">9</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="visual_conBot">
+            <img class="visual_conBot_l" src="images/ksh42.png">
+            <img class="visual_conBot_2" src="images/ksh43.png">
+            <img class="visual_conBot_3" src="images/ksh44.png">
+            <img class="visual_conBot_4" src="images/ksh45.png">
+            <div class="visual_chart_text">
+                <h1>出行服务+大数据</h1>
+                <h2>河南省交通大数据分析平台</h2>
+            </div>
+            <div class="visual_chart" id="main8"></div>
+            <div class="visual_conBot_bot">
+                <div class="visualSssf_left">
+                    <h3>今日车辆统计</h3>
+                    <a style="display:block" data-city="all" class="active">全省数据</a>
+                    <a data-city="郑州">郑州</a>
+                    <a data-city="开封">开封</a>
+                    <a data-city="洛阳">洛阳</a>
+                    <a data-city="新乡">新乡</a>
+                    <a data-city="周口">周口</a>
+                    <a data-city="焦作">焦作</a>
+                    <a data-city="信阳">信阳</a>
+                    <a data-city="商丘">商丘</a>
+                    <a data-city="安阳">安阳</a>
+                </div>
+
+                <div class="visualSssf_right">
+                    <div class="visualSssf_right_box" id="main5"></div>
+                    <div class="visualSssf_right_box" id="main6"></div>
+                    <div class="visualSssf_right_box" id="main7"></div>
+                </div>
+                <div class="clear"></div>
+                <!-- visual.js 已在头部引入，此处删除重复引用 -->
+            </div>
+        </div>
+    </div>
+    <div class="visual_right">
+        <div class="visual_box">
+            <div class="visual_title">
+                <span>本月发生事件</span>
+                <img src="images/ksh33.png">
+            </div>
+            <div class="swiper-container visual_swiper1 visual_chart">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide"  id="main3"></div>
+                    <div class="swiper-slide"  id="main31"></div>
+                </div>
+            </div>
+        </div>
+        <div class="visual_box visualSfzsfl">
+            <div class="visual_title">
+                <span>访豫车辆</span>
+                <img src="images/ksh33.png">
+            </div>
+            <div class="visual_chart" id="main9">
+
+            </div>
+
+        </div>
+        <div class="visual_box">
+            <div class="visual_title">
+                <span>收费站收费排行</span>
+                <img src="images/ksh33.png">
+            </div>
+            <div class="swiper-container visual_swiper2 visual_chart">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide"  id="main4"></div>
+                    <div class="swiper-slide"  id="main41"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="clear"></div>
+</div>
+<script type="text/javascript">
+
+    $(function(){
+        // 城市点击事件已在visual.js中处理，这里只处理样式相关
+        var sfzcllH=$('.sfzcll_box').height()
+        var sfzcllHtwo=sfzcllH-2
+        $('.sfzcll_box').css('line-height',sfzcllH+'px')
+        $('.sfzcll_smallBk>div').css('line-height',sfzcllHtwo+'px')
+
+        //删除加载动画
+        $('#load').fadeOut(1000)
+        setTimeout(function(){
+                $('#load').remove()
+            }
+            ,1100);
+    })
+
+    //////////////顶端监控 - 实时数据轮询
+    function updateRealtimeDashboard() {
+        $.ajax({
+            url: '/api/realtime/dashboard',
+            type: 'GET',
+            success: function(data) {
+                // 1. 当前警情数(起)
+                $('#police-count1').text(data.alertCount);
+
+                // 2. 区域拥堵指数
+                $('#congestion-index').text(data.congestionIndex.toFixed(1));
+                $('#congestion-status').text(getCongestionStatus(data.congestionIndex));
+                $('#avg-speed').text(data.avgSpeed + ' km/h');
+
+                // 3. 收费站通行效率
+                $('#efficiency-value').text(data.efficiency.toFixed(1));
+
+                // 4. 异常事件数
+                $('#incident-count').text(data.abnormalEvents);
+
+                console.log('实时数据已更新:', new Date().toLocaleTimeString());
+            },
+            error: function(xhr) {
+                console.error('实时数据更新失败:', xhr.status);
+            }
+        });
+    }
+
+    // 新增拥堵状态判断函数
+    function getCongestionStatus(index) {
+        if (index > 1000) return '严重拥堵';
+        if (index > 500) return '中度拥堵';
+        if (index > 200) return '轻度拥堵';
+        return '畅通';
+    }
+
+    // 页面加载时调用一次，然后每5秒刷新
+    $(document).ready(function() {
+        updateRealtimeDashboard();
+        setInterval(updateRealtimeDashboard, 2000);
+    });
+
+
+    //////////////交通流量 - 实时更新
+    var myChart1 = echarts.init(document.getElementById('main1'));
+    
+    // 交通流量图表配置
+    var trafficFlowOption = {
+        title: { show: false },
+        tooltip: {
+            trigger: 'axis',
+            formatter: function(params) {
+                let time = params[0].name.replace(/-/g, '年') + '月<br/>';
+                let str = '';
+                params.forEach(item => {
+                    let unit = item.seriesName.includes('环比') || item.seriesName.includes('同比') ? '%' : '万辆';
+                    str += `${item.marker}${item.seriesName}：${item.data.toFixed(1)}${unit}<br>`;
+                });
+                return time + str;
+            },
+            axisPointer: { type: 'none' }
+        },
+        legend: {
+            orient: 'horizontal',
+            top: 10,
+            left: 'center',
+            textStyle: { color: '#fff' },
+            data: ['高速公路', '城镇公路', '环比-高速公路', '环比-城镇公路', '同比-高速公路', '同比-城镇公路']
+        },
+        grid: { y2: 25 },
+        xAxis: {
+            type: 'category',
+            data: [],
+            axisLabel: {
+                interval: 0,
+                formatter: function (value) {
+                    const year = value.split('-')[0].substring(2);
+                    const month = value.split('-')[1].padStart(2, '0');
+                    return `${year}年${month}月`;
+                },
+                textStyle: { color: '#fff' }
+            }
+        },
+        yAxis: [
+            { type: 'value', axisLabel: { color: '#fff' } },
+            { type: 'value', axisLabel: { formatter: '{value}%', color: '#fff' }, splitLine: { show: false } }
+        ],
+        series: [
+            { name: '高速公路', type: 'bar', data: [] },
+            { name: '城镇公路', type: 'bar', data: [] },
+            { name: '环比-高速公路', type: 'line', yAxisIndex: 1, data: [] },
+            { name: '环比-城镇公路', type: 'line', yAxisIndex: 1, data: [] },
+            { name: '同比-高速公路', type: 'line', yAxisIndex: 1, data: [] },
+            { name: '同比-城镇公路', type: 'line', yAxisIndex: 1, data: [] }
+        ]
+    };
+    myChart1.setOption(trafficFlowOption);
+
+    // 存储历史数据用于计算环比同比
+    var trafficFlowHistory = { highway: {}, urban: {} };
+    var lastTrafficFlowData = { highway: 0, urban: 0 };
+
+    // 加载交通流量数据
+    function loadTrafficFlowData() {
+        // 先从数据库加载历史数据
+        $.ajax({
+            url: '/api/traffic/2025',
+            type: 'GET',
+            success: function(response) {
+                const groupedData = response.data.data;
+                const years = [];
+                const highwayValues = [];
+                const urbanValues = [];
+                const momData = { highway: [], urban: [] };
+                const yoyData = { highway: [], urban: [] };
+
+                Object.entries(groupedData).forEach(([key, stats]) => {
+                    const [year, month, type] = key.split('-');
+                    const formattedYearMonth = `${year}-${month.padStart(2, '0')}`;
+
+                    if (!years.includes(formattedYearMonth)) {
+                        years.push(formattedYearMonth);
+                    }
+
+                    if (type === '高速公路') {
+                        highwayValues.push(stats.current);
+                        yoyData.highway.push(stats.yoy);
+                        momData.highway.push(stats.mom);
+                        trafficFlowHistory.highway[formattedYearMonth] = stats.current;
+                    } else if (type === '城镇公路') {
+                        urbanValues.push(stats.current);
+                        yoyData.urban.push(stats.yoy);
+                        momData.urban.push(stats.mom);
+                        trafficFlowHistory.urban[formattedYearMonth] = stats.current;
+                    }
+                });
+
+                years.sort((a, b) => a.localeCompare(b));
+
+                // 保存最新月份的数据
+                if (years.length > 0) {
+                    const latestMonth = years[years.length - 1];
+                    lastTrafficFlowData.highway = trafficFlowHistory.highway[latestMonth] || 0;
+                    lastTrafficFlowData.urban = trafficFlowHistory.urban[latestMonth] || 0;
+                }
+
+                myChart1.setOption({
+                    xAxis: { data: years },
+                    series: [
+                        { name: '高速公路', data: highwayValues },
+                        { name: '城镇公路', data: urbanValues },
+                        { name: '环比-高速公路', data: momData.highway },
+                        { name: '环比-城镇公路', data: momData.urban },
+                        { name: '同比-高速公路', data: yoyData.highway },
+                        { name: '同比-城镇公路', data: yoyData.urban }
+                    ]
+                });
+            },
+            error: function(xhr, status, error) {
+                console.error('加载交通流量历史数据失败:', error);
+            }
+        });
+    }
+
+    // 更新实时交通流量数据（支持多月份）
+    // time_id 到月份索引的映射 (2025年: 14-25 对应 1-12月，即索引0-11)
+    // 图表X轴显示的是1-12月，对应数组索引0-11
+    var timeIdToMonthIndex = {
+        14: 0,   // 2025-01 -> 1月 (索引0)
+        15: 1,   // 2025-02 -> 2月 (索引1)
+        16: 2,   // 2025-03 -> 3月 (索引2)
+        17: 3,   // 2025-04 -> 4月 (索引3)
+        18: 4,   // 2025-05 -> 5月 (索引4)
+        19: 5,   // 2025-06 -> 6月 (索引5)
+        20: 6,   // 2025-07 -> 7月 (索引6)
+        21: 7,   // 2025-08 -> 8月 (索引7)
+        22: 8,   // 2025-09 -> 9月 (索引8)
+        23: 9,   // 2025-10 -> 10月 (索引9)
+        24: 10,  // 2025-11 -> 11月 (索引10)
+        25: 11   // 2025-12 -> 12月 (索引11)
+    };
+
+    function updateRealtimeTrafficFlow() {
+        $.ajax({
+            url: '/api/realtime/traffic-flow',
+            type: 'GET',
+            success: function(realtimeData) {
+                if (realtimeData && realtimeData.length > 0) {
+                    var currentOption = myChart1.getOption();
+                    var xAxisData = currentOption.xAxis[0].data;
+                    var highwayData = currentOption.series[0].data.slice();
+                    var urbanData = currentOption.series[1].data.slice();
+
+                    realtimeData.forEach(function(item) {
+                        var flowValue = (item.flow_count / 10000).toFixed(2); // 转换为万辆
+                        var timeId = item.time_id;
+                        
+                        // 根据time_id找到对应的月份索引
+                        var monthIndex = timeIdToMonthIndex[timeId];
+                        if (monthIndex === undefined) {
+                            // 如果没有映射，尝试更新最后一个月
+                            monthIndex = highwayData.length - 1;
+                        }
+                        
+                        if (item.type_name === '高速公路' || item.type_id === 1) {
+                            if (monthIndex >= 0 && monthIndex < highwayData.length) {
+                                highwayData[monthIndex] = parseFloat(flowValue);
+                            }
+                        } else if (item.type_name === '城镇公路' || item.type_id === 2) {
+                            if (monthIndex >= 0 && monthIndex < urbanData.length) {
+                                urbanData[monthIndex] = parseFloat(flowValue);
+                            }
+                        }
+                    });
+
+                    myChart1.setOption({
+                        series: [
+                            { name: '高速公路', data: highwayData },
+                            { name: '城镇公路', data: urbanData }
+                        ]
+                    });
+
+                    console.log('交通流量实时数据已更新:', new Date().toLocaleTimeString());
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('实时交通流量数据暂不可用，使用历史数据');
+            }
+        });
+    }
+
+    // 初始加载历史数据
+    loadTrafficFlowData();
+    
+    // 每5秒更新实时数据
+    setInterval(updateRealtimeTrafficFlow, 2000);
+
+    //////////////交通工具流量 - 实时更新
+    var myChart2 = echarts.init(document.getElementById('main2'));
+    var option2 = {
+        title: {
+            text: "",
+            left: 'center',
+            textStyle: { color: '#fff', fontSize: 16 }
+        },
+        color: ['#89BD1B', '#4A90E2', '#E64340'],
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { lineStyle: { color: '#fff' } },
+            formatter: function(params) {
+                var result = params[0].name + '月<br/>';
+                params.forEach(function(item) {
+                    var color = item.seriesName === '小型车' ? '#89BD1B' :
+                               item.seriesName === '中型车' ? '#4A90E2' : '#E64340';
+                    result += '<span style="display:inline-block;margin-right:5px;border-radius:10px;width:9px;height:9px;background-color:' + color + '"></span>' +
+                        item.seriesName + ': ' + item.value + '<br/>';
+                });
+                return result;
+            }
+        },
+        legend: {
+            icon: 'rect', itemWidth: 14, itemHeight: 5, itemGap: 13,
+            data: ['小型车', '中型车', '大型车'],
+            right: '10px', top: '0px',
+            textStyle: { fontSize: 12, color: '#fff' }
+        },
+        grid: { left: 60, top: 50, right: 8, bottom: 30 },
+        xAxis: [{
+            type: 'category',
+            boundaryGap: false,
+            axisLine: { lineStyle: { color: '#57617B' } },
+            axisLabel: { textStyle: { color: '#fff' }, formatter: function(value) { return value + "月"; } },
+            axisTick: { show: false },
+            data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        }],
+        yAxis: [{
+            type: 'value',
+            axisTick: { show: true },
+            axisLabel: { 
+                margin: 10, 
+                textStyle: { fontSize: 12, color: '#fff' },
+                formatter: function(value) {
+                    if (value >= 10000) {
+                        return (value / 10000).toFixed(1) + '万';
+                    }
+                    return value;
+                }
+            },
+            splitLine: { lineStyle: { color: '#57617B' } }
+        }],
+        series: [
+            { name: '小型车', type: 'line', smooth: true, symbol: 'circle', symbolSize: 6, 
+              lineStyle: { normal: { width: 2 } }, itemStyle: { normal: { color: '#89BD1B' } },
+              areaStyle: { normal: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(137, 189, 27, 0.1)' }, { offset: 0.8, color: 'rgba(137, 189, 27, 0)' }], false) } },
+              data: [] },
+            { name: '中型车', type: 'line', smooth: true, symbol: 'circle', symbolSize: 6,
+              lineStyle: { normal: { width: 2 } }, itemStyle: { normal: { color: '#4A90E2' } },
+              areaStyle: { normal: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(74, 144, 226, 0.1)' }, { offset: 0.8, color: 'rgba(74, 144, 226, 0)' }], false) } },
+              data: [] },
+            { name: '大型车', type: 'line', smooth: true, symbol: 'circle', symbolSize: 6,
+              lineStyle: { normal: { width: 2 } }, itemStyle: { normal: { color: '#E64340' } },
+              areaStyle: { normal: { color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: 'rgba(230, 67, 64, 0.1)' }, { offset: 0.8, color: 'rgba(230, 67, 64, 0)' }], false) } },
+              data: [] }
+        ]
+    };
+    myChart2.setOption(option2);
+
+    // 存储历史数据
+    var vehicleTrafficHistory = { '小型车': [], '中型车': [], '大型车': [] };
+
+    // 加载交通工具流量历史数据
+    function loadVehicleTrafficData() {
+        $.ajax({
+            url: '/api/toll/data',
+            type: 'GET',
+            success: function(response) {
+                if (response.month && Array.isArray(response.month)) {
+                    option2.xAxis[0].data = response.month;
+                }
+                
+                // 更新系列数据
+                if (response.seriesData) {
+                    Object.entries(response.seriesData).forEach(([name, values]) => {
+                        vehicleTrafficHistory[name] = values.slice();
+                    });
+                    
+                    option2.series[0].data = vehicleTrafficHistory['小型车'];
+                    option2.series[1].data = vehicleTrafficHistory['中型车'];
+                    option2.series[2].data = vehicleTrafficHistory['大型车'];
+                }
+                
+                myChart2.setOption(option2);
+            },
+            error: function() {
+                console.error('交通工具流量历史数据加载失败');
+            }
+        });
+    }
+
+    // 更新实时交通工具流量数据（支持多月份）
+    function updateRealtimeVehicleTraffic() {
+        $.ajax({
+            url: '/api/realtime/vehicle-traffic',
+            type: 'GET',
+            success: function(realtimeData) {
+                if (realtimeData && realtimeData.length > 0) {
+                    var currentOption = myChart2.getOption();
+                    var smallData = currentOption.series[0].data.slice();
+                    var mediumData = currentOption.series[1].data.slice();
+                    var largeData = currentOption.series[2].data.slice();
+                    
+                    // 确保数组长度为12
+                    while (smallData.length < 12) smallData.push(0);
+                    while (mediumData.length < 12) mediumData.push(0);
+                    while (largeData.length < 12) largeData.push(0);
+
+                    // 用Map去重，保留每个time_id+vehicle_type的最大值
+                    var dataMap = {};
+                    realtimeData.forEach(function(item) {
+                        var key = item.time_id + '_' + item.vehicle_type;
+                        if (!dataMap[key] || dataMap[key].vehicle_count < item.vehicle_count) {
+                            dataMap[key] = item;
+                        }
+                    });
+
+                    // 遍历去重后的数据
+                    Object.values(dataMap).forEach(function(item) {
+                        var vehicleCount = item.vehicle_count;
+                        var vehicleType = item.vehicle_type;
+                        var timeId = item.time_id;
+                        
+                        // 根据time_id找到对应的月份索引 (2025年: 14-25 对应 1-12月)
+                        var monthIndex = timeIdToMonthIndex[timeId];
+                        if (monthIndex === undefined) {
+                            return; // 跳过未映射的数据（如time_id=1是2026年数据）
+                        }
+                        
+                        // 更新对应月份的数据
+                        if (vehicleType === '小型车' && monthIndex >= 0 && monthIndex < 12) {
+                            smallData[monthIndex] = vehicleCount;
+                        } else if (vehicleType === '中型车' && monthIndex >= 0 && monthIndex < 12) {
+                            mediumData[monthIndex] = vehicleCount;
+                        } else if (vehicleType === '大型车' && monthIndex >= 0 && monthIndex < 12) {
+                            largeData[monthIndex] = vehicleCount;
+                        }
+                    });
+
+                    myChart2.setOption({
+                        series: [
+                            { name: '小型车', data: smallData },
+                            { name: '中型车', data: mediumData },
+                            { name: '大型车', data: largeData }
+                        ]
+                    });
+
+                    console.log('交通工具流量实时数据已更新:', new Date().toLocaleTimeString());
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('实时交通工具流量数据暂不可用，使用历史数据');
+            }
+        });
+    }
+
+    // 初始加载历史数据
+    loadVehicleTrafficData();
+    
+    // 每5秒更新实时数据
+    setInterval(updateRealtimeVehicleTraffic, 2000);
+
+    //////////////本月发生事件 - 实时更新（按比例展示）
+    // 存储违规数据用于tooltip显示
+    var violationDataCache = [];
+    
+    var option3 = {
+        backgroundColor: 'rgba(0,0,0,0)',
+        tooltip: {
+            trigger: 'item',
+            backgroundColor: 'rgba(255,255,255,0.9)',
+            borderColor: '#ccc',
+            borderWidth: 1,
+            padding: 10,
+            textStyle: { color: '#000' },
+            formatter: function(params) {
+                if (params.data && params.data.value) {
+                    var result = params.data.name + '<br/>';
+                    var values = params.data.value;
+                    for (var i = 0; i < violationDataCache.length && i < values.length; i++) {
+                        var item = violationDataCache[i];
+                        result += item.name + ': ' + item.value + ' (' + item.percent + '%)<br/>';
+                    }
+                    return result;
+                }
+                return '';
+            }
+        },
+        radar: {
+            center: ['50%', '50%'],
+            radius: '75%',
+            startAngle: 90,
+            splitNumber: 5,
+            shape: 'circle',
+            axisLine: { lineStyle: { color: 'rgba(255,255,255,0.2)' } },
+            splitLine: { lineStyle: { color: 'rgba(255,255,255,0.1)' } },
+            axisLabel: { show: false },
+            name: { textStyle: { color: '#fff', fontSize: 12 } },
+            indicator: []
+        },
+        series: [{
+            type: 'radar',
+            data: [],
+            lineStyle: { color: '#df4131', width: 2 },
+            areaStyle: { color: 'rgba(223, 65, 49, 0.6)' }
+        }]
+    };
+
+    var option31 = {
+        backgroundColor: 'rgba(0,0,0,0)',
+        title: { text: '事件类型分布', left: 'center', textStyle: { color: '#fff', fontSize: 18 } },
+        tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b}: {c} ({d}%)'
+        },
+        legend: { orient: 'vertical', right: 10, top: 20, data: [], textStyle: { color: '#fff', fontSize: 10 } },
+        series: [{
+            name: '事件类型',
+            type: 'pie',
+            radius: ['40%', '60%'],
+            center: ['45%', '55%'],
+            avoidLabelOverlap: false,
+            label: { show: false, position: 'center' },
+            emphasis: { label: { show: true, fontSize: '16', fontWeight: 'bold' } },
+            labelLine: { show: false },
+            data: []
+        }]
+    };
+
+    var myChart3 = echarts.init(document.getElementById('main3'));
+    myChart3.setOption(option3);
+    var myChart31 = echarts.init(document.getElementById('main31'));
+    myChart31.setOption(option31);
+
+    var violationColors = ['#e9df3d', '#f79c19', '#21fcd6', '#08c8ff', '#df4131', '#9b59b6', '#3498db', '#e74c3c', '#2ecc71', '#f39c12'];
+
+    // 加载违规事件历史数据
+    function loadViolationData() {
+        $.ajax({
+            url: '/api/accident/stats',
+            type: 'GET',
+            dataType: 'json',
+            success: function(response) {
+                updateViolationCharts(response.eventTypeCounts);
+            },
+            error: function(xhr, status, error) {
+                console.error('违规事件历史数据加载失败:', error);
+            }
+        });
+    }
+
+    // 更新实时违规事件数据
+    function updateRealtimeViolation() {
+        $.ajax({
+            url: '/api/realtime/traffic-violation',
+            type: 'GET',
+            success: function(realtimeData) {
+                if (realtimeData && realtimeData.length > 0) {
+                    // 转换为 eventTypeCounts 格式
+                    var eventTypeCounts = {};
+                    realtimeData.forEach(function(item) {
+                        eventTypeCounts[item.violation_name] = item.violation_count;
+                    });
+                    updateViolationCharts(eventTypeCounts);
+                    console.log('违规事件实时数据已更新:', new Date().toLocaleTimeString());
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('实时违规事件数据暂不可用，使用历史数据');
+            }
+        });
+    }
+
+    // 更新违规事件图表（按比例展示）
+    function updateViolationCharts(eventTypeCounts) {
+        var data = [];
+        var total = 0;
+
+        // 计算总数
+        for (var key in eventTypeCounts) {
+            if (eventTypeCounts[key] > 0) {
+                total += eventTypeCounts[key];
+            }
+        }
+
+        // 处理数据，取前5个
+        var count = 0;
+        for (var key in eventTypeCounts) {
+            if (count >= 5) break;
+            if (eventTypeCounts[key] > 0) {
+                var percent = total > 0 ? ((eventTypeCounts[key] / total) * 100).toFixed(1) : 0;
+                data.push({ name: key, value: eventTypeCounts[key], percent: percent });
+                count++;
+            }
+        }
+
+        // 按值排序
+        data.sort(function(a, b) { return b.value - a.value; });
+
+        // 补充默认数据
+        while (data.length < 5) {
+            data.push({ name: '其他', value: 1, percent: '0.0' });
+        }
+
+        // 保存到缓存供tooltip使用
+        violationDataCache = data;
+
+        // 计算比例值用于雷达图（归一化到0-100）
+        var maxValue = Math.max(...data.map(d => d.value));
+        var radarValues = data.map(d => maxValue > 0 ? parseFloat(((d.value / maxValue) * 100).toFixed(1)) : 0);
+
+        // 更新雷达图
+        option3.radar.indicator = data.map(function(d) {
+            return { name: d.name, max: 100 };
+        });
+        option3.series[0].data = [{
+            value: radarValues,
+            name: "告警类型TOP5"
+        }];
+        myChart3.setOption(option3, true);
+
+        // 更新饼图（按比例展示）
+        var pieData = data.map(function(d, index) {
+            return {
+                name: d.name,
+                value: d.value,
+                itemStyle: { color: violationColors[index % violationColors.length] }
+            };
+        });
+        option31.legend.data = data.map(d => d.name);
+        option31.series[0].data = pieData;
+        myChart31.setOption(option31, true);
+    }
+
+    // 初始加载历史数据
+    loadViolationData();
+    
+    // 每5秒更新实时数据
+    setInterval(updateRealtimeViolation, 2000);
+    //收费站收费排行
+    //收费站收费排行
+    // 页面加载时调用
+    $(document).ready(function () {
+        // 1. 初始化地图
+        initChinaMap();
+
+        // 2. 初始化高速图表
+        initHighwayChart();
+
+        // 3. 初始化 swiper
+        initSwiper2();
+
+        // 4. 加载其他数据
+        loadMapDataForMain8();
+
+        // 5. 隐藏加载动画
+        setTimeout(function () {
+            $('#loading').fadeOut();
+        }, 1000);
+    });
+    //今日实时收费
+
+    //中间地图
+    $(document).ready(function() {
+        // 1. 初始化地图
+        initChinaMap();
+
+        // 2. 加载数据
+        loadMapDataForMain8();
+
+        // 3. 隐藏加载提示
+        setTimeout(function() {
+            $('#loading').fadeOut();
+        }, 1000);
+    });
+    //收费站收费量
+    //收费站收费量
+    $(document).ready(function() {
+        // 2. 加载数据
+        loadMapDataForMain9();
+
+        // 3. 隐藏加载提示
+        setTimeout(function() {
+            $('#loading').fadeOut();
+        }, 1000);
+    });
+</script>
+</body>
+</html>
