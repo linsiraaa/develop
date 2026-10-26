@@ -488,7 +488,7 @@ CREATE TABLE `sys_user` (
 
 LOCK TABLES `sys_user` WRITE;
 /*!40000 ALTER TABLE `sys_user` DISABLE KEYS */;
-INSERT INTO `sys_user` VALUES (1,'2026-01-05 18:34:18','123456',1,'linsir');
+INSERT INTO `sys_user` VALUES (1,'2026-01-05 18:34:18','$2b$10$eBRnP5bx1NAQU9jUoezaQ.U6X8Af.NPtMywNHlXCvAuGLmpMYdGIG',1,'linsir');
 /*!40000 ALTER TABLE `sys_user` ENABLE KEYS */;
 UNLOCK TABLES;
 

@@ -130,6 +130,15 @@ public class RealTimeDataUpdater {
     }
 
 
+    static int latestRoadConditionId(Connection conn) throws SQLException {
+        String sql = "SELECT rc.rc_id FROM road_condition rc JOIN time_dim t ON rc.time_id=t.time_id " +
+                "ORDER BY t.year DESC, t.month DESC, rc.rc_id DESC LIMIT 1";
+        try (PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            return rs.next() ? rs.getInt("rc_id") : -1;
+        }
+    }
+
     /**
      * 更新路况数据 (road_condition)
      */
@@ -143,18 +152,25 @@ public class RealTimeDataUpdater {
         baseAbnormalEvents = adjustInt(baseAbnormalEvents, (int)(3 * peakFactor), (int)(15 * peakFactor), 0.15);
         baseAvgSpeed = adjustInt(baseAvgSpeed, (int)(120 - 50 * peakFactor), (int)(120 - 20 * peakFactor), 0.08);
 
-        String sql = "UPDATE road_condition SET alert_count=?, congestion_index=?, efficiency=?, abnormal_events=?, avg_speed=?, wait_time=? WHERE rc_id=1";
+        String sql = "UPDATE road_condition SET alert_count=?, congestion_index=?, efficiency=?, abnormal_events=?, avg_speed=?, wait_time=? WHERE rc_id=?";
 
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            int rcId = latestRoadConditionId(conn);
+            if (rcId < 0) {
+                log.warn("[路况] 没有可更新的路况记录");
+                return;
+            }
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, baseAlertCount + random.nextInt(11) - 5);
             stmt.setDouble(2, baseCongestionIndex + (random.nextDouble() - 0.5) * 50);
             stmt.setDouble(3, Math.min(95, Math.max(50, baseEfficiency)));
             stmt.setInt(4, Math.max(0, baseAbnormalEvents + random.nextInt(5) - 2));
             stmt.setInt(5, Math.max(30, baseAvgSpeed + random.nextInt(11) - 5));
             stmt.setInt(6, random.nextInt(300));
+            stmt.setInt(7, rcId);
             int rows = stmt.executeUpdate();
             log.info("[路况] 警情={} 拥堵={} 效率={}% (更新{}行)", baseAlertCount, (int)baseCongestionIndex, (int)baseEfficiency, rows);
+            }
         } catch (Exception e) {
             log.warn("[路况] 更新失败: {}", e.getMessage());
         }

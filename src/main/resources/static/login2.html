@@ -1,624 +1,742 @@
 <!doctype html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="utf-8">
-    <title>河南省交通大数据分析平台 - 用户登录</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="https://apps.bdimg.com/libs/bootstrap/3.3.4/css/bootstrap.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <script src="js/jquery.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
+    <title>河南省交通大数据分析平台 · 登录</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#050d1a">
     <style>
-        /* 全局样式重置与背景 */
-        body, html {
+        :root {
+            --bg-deep: #050d1a;
+            --line: rgba(80, 170, 255, 0.14);
+            --line-strong: rgba(80, 170, 255, 0.32);
+            --cyan: #22d3ee;
+            --cyan-soft: rgba(34, 211, 238, 0.12);
+            --blue: #3b82f6;
+            --text: #e8f2ff;
+            --text-dim: #7d93ad;
+            --danger: #f87171;
+            --ok: #34d399;
+            --radius: 14px;
+            --ease: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        html, body {
             height: 100%;
-            margin: 0;
-            padding: 0;
-            font-family: "Microsoft YaHei", sans-serif;
+            font-family: "Microsoft YaHei", "PingFang SC", "Hiragino Sans GB", system-ui, sans-serif;
+            background: var(--bg-deep);
+            color: var(--text);
             overflow: hidden;
-            background: linear-gradient(135deg, #0a1628 0%, #0d2137 50%, #0a1628 100%);
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* 动态粒子背景容器 */
-        #canvas-bg {
+        /* ── 单一背景场：覆盖整个画面 ───────────────── */
+        .bg-field {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(ellipse 65% 55% at 22% 28%, rgba(34, 211, 238, 0.14), transparent 58%),
+                radial-gradient(ellipse 55% 48% at 78% 72%, rgba(59, 130, 246, 0.13), transparent 56%),
+                radial-gradient(ellipse 48% 42% at 50% 50%, rgba(99, 102, 241, 0.07), transparent 70%),
+                linear-gradient(168deg, #0b1a2e 0%, #081524 48%, #0a1e33 100%);
+        }
+
+        /* 网格纹理：整体覆盖，不依附任何一侧 */
+        .bg-field::before {
+            content: "";
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
+            background-image:
+                linear-gradient(var(--line) 1px, transparent 1px),
+                linear-gradient(90deg, var(--line) 1px, transparent 1px);
+            background-size: 56px 56px;
+            mask-image: radial-gradient(ellipse 75% 70% at 40% 45%, #000 10%, transparent 78%);
+            -webkit-mask-image: radial-gradient(ellipse 75% 70% at 40% 45%, #000 10%, transparent 78%);
+        }
+
+        /* 极光漂移 */
+        .bg-field::after {
+            content: "";
+            position: absolute;
+            inset: -20%;
+            background:
+                radial-gradient(circle at 28% 32%, rgba(34, 211, 238, 0.18), transparent 52%),
+                radial-gradient(circle at 74% 68%, rgba(59, 130, 246, 0.16), transparent 50%);
+            filter: blur(60px);
+            animation: auroraDrift 22s ease-in-out infinite alternate;
+        }
+
+        @keyframes auroraDrift {
+            0%   { transform: translate3d(-4%, -3%, 0) scale(1.02); opacity: 0.72; }
+            50%  { transform: translate3d(3%, 4%, 0)   scale(1.09); opacity: 0.95; }
+            100% { transform: translate3d(-2%, 5%, 0)  scale(1.04); opacity: 0.82; }
+        }
+
+        /* ── 主容器：横向排列两张卡片 ───────────────── */
+        .stage {
+            position: relative;
             z-index: 1;
+            height: 100vh;
+            height: 100dvh;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+            padding: clamp(20px, 3vw, 56px);
+            gap: clamp(16px, 3vw, 48px);
         }
 
-        /* 网格背景 */
-        .grid-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 180, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 180, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: 2;
-            pointer-events: none;
-        }
-
-        /* 扫描线动画 */
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, rgba(0, 200, 255, 0.4), transparent);
-            animation: scanLine 4s linear infinite;
-            z-index: 3;
-            pointer-events: none;
-        }
-
-        @keyframes scanLine {
-            0% { top: 0; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
-        }
-
-        /* 登录框主体容器 */
-        .login-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 420px;
-            z-index: 10;
-            padding: 45px 40px;
-            background: rgba(8, 24, 48, 0.85);
-            border: 1px solid rgba(0, 180, 255, 0.3);
-            border-radius: 8px;
-            box-shadow: 
-                0 0 40px rgba(0, 150, 255, 0.15),
-                inset 0 0 60px rgba(0, 100, 200, 0.05);
-            backdrop-filter: blur(10px);
-        }
-
-        /* 发光边框动画 */
-        .login-container::before {
-            content: "";
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: linear-gradient(45deg, #00b4ff, #0066cc, #00b4ff, #0066cc);
-            background-size: 400% 400%;
-            border-radius: 10px;
-            z-index: -1;
-            animation: glowBorder 3s ease infinite;
-            opacity: 0.5;
-        }
-
-        @keyframes glowBorder {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        /* 四角装饰 */
-        .corner {
-            position: absolute;
-            width: 25px;
-            height: 25px;
-            border-color: #00d4ff;
-            border-style: solid;
-        }
-        .corner-tl { top: -1px; left: -1px; border-width: 3px 0 0 3px; border-radius: 8px 0 0 0; }
-        .corner-tr { top: -1px; right: -1px; border-width: 3px 3px 0 0; border-radius: 0 8px 0 0; }
-        .corner-bl { bottom: -1px; left: -1px; border-width: 0 0 3px 3px; border-radius: 0 0 0 8px; }
-        .corner-br { bottom: -1px; right: -1px; border-width: 0 3px 3px 0; border-radius: 0 0 8px 0; }
-
-        /* 标题样式 */
-        .header-title {
-            text-align: center;
-            color: #fff;
-            font-size: 24px;
-            font-weight: 600;
-            margin-bottom: 10px;
-            letter-spacing: 3px;
-        }
-
-        .header-title i {
-            color: #00d4ff;
-            margin-right: 10px;
-            text-shadow: 0 0 20px rgba(0, 212, 255, 0.8);
-        }
-
-        .header-subtitle {
-            text-align: center;
-            color: rgba(0, 200, 255, 0.6);
-            font-size: 12px;
-            margin-bottom: 30px;
-            letter-spacing: 2px;
-        }
-
-        /* Tab 切换 */
-        .nav-tabs {
-            border-bottom: 1px solid rgba(0, 180, 255, 0.2);
-            margin-bottom: 30px;
+        /* ── 左侧品牌卡 ───────────────────────────── */
+        .brand-card {
+            padding: clamp(28px, 4vw, 56px);
+            background: rgba(8, 20, 36, 0.68);
+            border: 1px solid var(--line);
+            border-radius: var(--radius);
+            backdrop-filter: blur(18px) saturate(1.1);
+            -webkit-backdrop-filter: blur(18px) saturate(1.1);
+            box-shadow: 0 20px 50px -24px rgba(0, 0, 0, 0.75),
+                        0 0 0 1px rgba(255, 255, 255, 0.02) inset;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: clamp(20px, 3vw, 36px);
         }
 
-        .nav-tabs > li {
-            float: none;
-            display: inline-block;
+        .brand-top {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 12px;
+            letter-spacing: 0.2em;
+            color: var(--text-dim);
+            text-transform: uppercase;
         }
 
-        .nav-tabs > li > a {
-            color: rgba(255, 255, 255, 0.5);
-            background: transparent;
-            border: none;
-            font-size: 15px;
-            padding: 12px 30px;
-            transition: all 0.3s;
-            position: relative;
+        .brand-mark {
+            width: 28px;
+            height: 28px;
+            border: 1.5px solid var(--cyan);
+            border-radius: 8px;
+            display: grid;
+            place-items: center;
+            box-shadow: 0 0 16px rgba(34, 211, 238, 0.32);
         }
 
-        .nav-tabs > li > a::after {
-            content: "";
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 2px;
-            background: linear-gradient(90deg, #00b4ff, #00d4ff);
-            transition: all 0.3s;
-            transform: translateX(-50%);
+        .brand-mark span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--cyan);
+            box-shadow: 0 0 10px var(--cyan);
         }
 
-        .nav-tabs > li > a:hover,
-        .nav-tabs > li.active > a {
-            color: #fff;
-            background: transparent;
-            border: none;
+        .brand-main h1 {
+            font-size: clamp(22px, 2.8vw, 36px);
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 14px;
         }
 
-        .nav-tabs > li.active > a::after,
-        .nav-tabs > li > a:hover::after {
+        .brand-main h1 em {
+            font-style: normal;
+            background: linear-gradient(96deg, var(--cyan), var(--blue));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .brand-main p {
+            font-size: clamp(12px, 1vw, 14px);
+            line-height: 1.85;
+            color: var(--text-dim);
+            max-width: 38em;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--line);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .metric {
+            background: rgba(6, 14, 26, 0.75);
+            padding: 14px 12px;
+        }
+
+        .metric dt {
+            font-size: 10px;
+            letter-spacing: 0.16em;
+            color: var(--text-dim);
+            margin-bottom: 6px;
+        }
+
+        .metric dd {
+            font-size: clamp(16px, 1.6vw, 22px);
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            color: var(--cyan);
+            margin: 0;
+        }
+
+        .brand-foot {
+            font-size: 11px;
+            color: rgba(125, 147, 173, 0.6);
+            letter-spacing: 0.06em;
+        }
+
+        /* ── 右侧登录卡 ───────────────────────────── */
+        .login-card {
+            padding: clamp(26px, 3vw, 38px);
+            background: rgba(10, 22, 38, 0.78);
+            border: 1px solid var(--line-strong);
+            border-radius: var(--radius);
+            backdrop-filter: blur(20px) saturate(1.15);
+            -webkit-backdrop-filter: blur(20px) saturate(1.15);
+            box-shadow: 0 24px 64px -20px rgba(0, 0, 0, 0.82),
+                        0 0 0 1px rgba(255, 255, 255, 0.03) inset,
+                        0 0 48px -12px rgba(34, 211, 238, 0.16);
+            max-width: 420px;
             width: 100%;
+            margin-left: auto;
         }
 
-        /* 表单输入框样式 */
-        .form-group {
-            position: relative;
+        .card-header {
             margin-bottom: 22px;
         }
 
-        .form-control {
-            background: rgba(0, 50, 100, 0.3);
-            border: 1px solid rgba(0, 180, 255, 0.2);
-            color: #fff;
-            height: 48px;
-            padding-left: 48px;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        .form-control:focus {
-            border-color: #00d4ff;
-            box-shadow: 0 0 20px rgba(0, 212, 255, 0.2), inset 0 0 20px rgba(0, 150, 255, 0.1);
-            background: rgba(0, 60, 120, 0.4);
-            outline: none;
-        }
-
-        /* 输入框图标 */
-        .input-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #00d4ff;
-            font-size: 16px;
-            z-index: 2;
-            transition: all 0.3s;
-        }
-
-        .form-control:focus + .input-icon,
-        .form-group:focus-within .input-icon {
-            color: #fff;
-            text-shadow: 0 0 10px #00d4ff;
-        }
-
-        /* 按钮样式 */
-        .btn-submit {
-            width: 100%;
-            height: 48px;
-            background: linear-gradient(135deg, #0077b6, #00b4d8);
-            border: none;
-            color: white;
-            font-size: 16px;
+        .card-header h2 {
+            font-size: 20px;
             font-weight: 600;
-            letter-spacing: 8px;
-            margin-top: 15px;
-            border-radius: 6px;
+            margin-bottom: 5px;
+        }
+
+        .card-header .sub {
+            font-size: 12px;
+            color: var(--text-dim);
+            letter-spacing: 0.04em;
+        }
+
+        /* Tab 切换 */
+        .tabs {
             position: relative;
-            overflow: hidden;
-            transition: all 0.3s;
-            cursor: pointer;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            padding: 4px;
+            margin-bottom: 24px;
+            background: rgba(255, 255, 255, 0.025);
+            border: 1px solid var(--line);
+            border-radius: 10px;
         }
 
-        .btn-submit::before {
-            content: "";
+        .tabs-thumb {
             position: absolute;
-            top: 0;
-            left: -100%;
+            top: 4px;
+            left: 4px;
+            width: calc(50% - 4px);
+            height: calc(100% - 8px);
+            background: linear-gradient(135deg, rgba(34, 211, 238, 0.16), rgba(59, 130, 246, 0.16));
+            border: 1px solid var(--line-strong);
+            border-radius: 7px;
+            transition: transform 0.32s var(--ease);
+        }
+
+        .tabs[data-active="register"] .tabs-thumb {
+            transform: translateX(calc(100% + 4px));
+        }
+
+        .tabs button {
+            position: relative;
+            z-index: 1;
+            appearance: none;
+            border: 0;
+            background: transparent;
+            color: var(--text-dim);
+            font: inherit;
+            font-size: 13.5px;
+            padding: 9px 0;
+            cursor: pointer;
+            border-radius: 7px;
+            transition: color 0.24s;
+        }
+
+        .tabs button[aria-selected="true"] { color: var(--text); }
+        .tabs button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px; }
+
+        /* 表单 */
+        .form { display: none; }
+        .form.is-active { display: block; }
+
+        .field {
+            position: relative;
+            margin-bottom: 15px;
+        }
+
+        .field label {
+            display: block;
+            margin-bottom: 6px;
+            font-size: 11.5px;
+            letter-spacing: 0.08em;
+            color: var(--text-dim);
+        }
+
+        .field input {
             width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
+            height: 44px;
+            padding: 0 42px 0 14px;
+            font: inherit;
+            font-size: 14px;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
         }
 
-        .btn-submit:hover {
-            background: linear-gradient(135deg, #00b4d8, #0077b6);
-            box-shadow: 0 5px 25px rgba(0, 180, 216, 0.4);
-            transform: translateY(-2px);
+        .field input::placeholder { color: rgba(125, 147, 173, 0.6); }
+
+        .field input:focus {
+            outline: none;
+            border-color: var(--cyan);
+            background: rgba(34, 211, 238, 0.055);
+            box-shadow: 0 0 0 3px var(--cyan-soft);
         }
 
-        .btn-submit:hover::before {
-            left: 100%;
+        .field input[aria-invalid="true"] {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.12);
         }
 
-        .btn-submit:active {
-            transform: translateY(0);
+        .toggle-password {
+            position: absolute;
+            right: 6px;
+            bottom: 6px;
+            width: 32px;
+            height: 32px;
+            display: grid;
+            place-items: center;
+            border: 0;
+            border-radius: 6px;
+            background: transparent;
+            color: var(--text-dim);
+            cursor: pointer;
+            transition: color 0.2s, background 0.2s;
         }
 
-        /* 底部文字 */
-        .footer-links {
-            margin-top: 20px;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.4);
+        .toggle-password:hover { color: var(--cyan); background: rgba(34, 211, 238, 0.07); }
+        .toggle-password:focus-visible { outline: 2px solid var(--cyan); outline-offset: 1px; }
+
+        /* 密码强度 */
+        .strength {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 3px;
+            margin-top: 7px;
+            height: 2.5px;
+        }
+
+        .strength i {
+            background: rgba(255, 255, 255, 0.07);
+            border-radius: 2px;
+            transition: background 0.3s;
+        }
+
+        .strength[data-score="1"] i:nth-child(-n+1) { background: var(--danger); }
+        .strength[data-score="2"] i:nth-child(-n+2) { background: #fbbf24; }
+        .strength[data-score="3"] i:nth-child(-n+3) { background: #60a5fa; }
+        .strength[data-score="4"] i { background: var(--ok); }
+
+        /* 页内消息 */
+        .msg {
+            display: none;
+            align-items: flex-start;
+            gap: 7px;
+            margin-bottom: 12px;
+            padding: 9px 11px;
             font-size: 12px;
+            line-height: 1.55;
+            border-radius: 7px;
+            border: 1px solid transparent;
         }
 
-        .footer-links a {
-            color: #00d4ff;
+        .msg.is-visible { display: flex; }
+        .msg[data-type="error"] {
+            color: #fecaca;
+            background: rgba(248, 113, 113, 0.08);
+            border-color: rgba(248, 113, 113, 0.25);
+        }
+        .msg[data-type="success"] {
+            color: #bbf7d0;
+            background: rgba(52, 211, 153, 0.08);
+            border-color: rgba(52, 211, 153, 0.25);
+        }
+
+        /* 提交按钮 */
+        .submit {
+            position: relative;
+            width: 100%;
+            height: 44px;
+            margin-top: 4px;
+            border: 0;
+            border-radius: 8px;
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            color: #04121f;
+            background: linear-gradient(135deg, var(--cyan), var(--blue));
+            cursor: pointer;
+            overflow: hidden;
+            transition: transform 0.18s var(--ease), box-shadow 0.24s, filter 0.2s;
+        }
+
+        .submit:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 8px 22px -6px rgba(34, 211, 238, 0.45);
+        }
+
+        .submit:active:not(:disabled) { transform: translateY(0); }
+        .submit:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; }
+        .submit:disabled { cursor: not-allowed; filter: grayscale(0.4) brightness(0.82); }
+
+        .submit .spinner {
+            display: none;
+            width: 14px;
+            height: 14px;
+            margin-right: 7px;
+            vertical-align: -2px;
+            border: 2px solid rgba(4, 18, 31, 0.32);
+            border-top-color: #04121f;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .submit.is-loading .spinner { display: inline-block; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .hint {
+            margin: 16px 0 0;
+            font-size: 11.5px;
+            line-height: 1.65;
+            text-align: center;
+            color: var(--text-dim);
+        }
+
+        .hint a {
+            color: var(--cyan);
             text-decoration: none;
-            transition: all 0.3s;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
             cursor: pointer;
         }
 
-        .footer-links a:hover {
-            color: #fff;
-            text-shadow: 0 0 10px #00d4ff;
+        .hint a:hover { border-bottom-color: var(--cyan); }
+
+        /* ── 响应式 ─────────────────────────────── */
+        @media (max-width: 900px) {
+            .stage {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+                gap: 20px;
+                overflow-y: auto;
+            }
+
+            .brand-card {
+                padding: 22px 20px;
+            }
+
+            .brand-main p,
+            .metrics { display: none; }
+
+            .brand-main h1 { font-size: 20px; margin-bottom: 0; }
+            .brand-foot { display: none; }
+
+            .login-card { margin-left: 0; }
         }
 
-        /* 装饰元素 - 浮动圆环 */
-        .floating-ring {
-            position: absolute;
-            border: 2px solid rgba(0, 180, 255, 0.1);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 4;
-        }
-
-        .ring1 {
-            width: 300px;
-            height: 300px;
-            top: 10%;
-            left: 5%;
-            animation: floatRing 8s ease-in-out infinite;
-        }
-
-        .ring2 {
-            width: 200px;
-            height: 200px;
-            bottom: 15%;
-            right: 10%;
-            animation: floatRing 6s ease-in-out infinite reverse;
-        }
-
-        .ring3 {
-            width: 150px;
-            height: 150px;
-            top: 60%;
-            left: 8%;
-            animation: floatRing 10s ease-in-out infinite;
-        }
-
-        @keyframes floatRing {
-            0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.3; }
-            50% { transform: translate(20px, -20px) rotate(180deg); opacity: 0.6; }
-        }
-
-        /* 数据流装饰线 */
-        .data-line {
-            position: absolute;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #00d4ff, transparent);
-            z-index: 4;
-            pointer-events: none;
-        }
-
-        .line1 {
-            width: 200px;
-            top: 20%;
-            right: 0;
-            animation: dataFlow 3s linear infinite;
-        }
-
-        .line2 {
-            width: 150px;
-            bottom: 30%;
-            left: 0;
-            animation: dataFlow 4s linear infinite reverse;
-        }
-
-        @keyframes dataFlow {
-            0% { opacity: 0; transform: translateX(-50px); }
-            50% { opacity: 1; }
-            100% { opacity: 0; transform: translateX(50px); }
-        }
-
-        /* 隐藏类 */
-        .hide {
-            display: none;
-        }
-
-        /* 版权信息 */
-        .copyright {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 12px;
-            z-index: 10;
-            letter-spacing: 1px;
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
     </style>
 </head>
 <body>
 
-<canvas id="canvas-bg"></canvas>
-<div class="grid-bg"></div>
-<div class="scan-line"></div>
+<div class="bg-field" aria-hidden="true"></div>
 
-<!-- 装饰元素 -->
-<div class="floating-ring ring1"></div>
-<div class="floating-ring ring2"></div>
-<div class="floating-ring ring3"></div>
-<div class="data-line line1"></div>
-<div class="data-line line2"></div>
+<main class="stage">
+    <!-- 左侧品牌卡 -->
+    <section class="brand-card">
+        <div class="brand-top">
+            <div class="brand-mark"><span></span></div>
+            <span>Henan Traffic Data Center</span>
+        </div>
 
-<div class="login-container">
-    <div class="corner corner-tl"></div>
-    <div class="corner corner-tr"></div>
-    <div class="corner corner-bl"></div>
-    <div class="corner corner-br"></div>
+        <div class="brand-main">
+            <h1>河南省交通<br><em>大数据分析平台</em></h1>
+            <p>汇聚高速与城镇公路流量、客货运量、异常事件与收费站收费等多源数据，支撑实时监测与趋势研判。</p>
+        </div>
 
-    <div class="header-title">
-        <i class="fas fa-satellite-dish"></i>交通大数据平台
-    </div>
-    <div class="header-subtitle">HENAN TRAFFIC BIG DATA ANALYSIS PLATFORM</div>
+        <dl class="metrics">
+            <div class="metric">
+                <dt>监测城市</dt>
+                <dd>18</dd>
+            </div>
+            <div class="metric">
+                <dt>数据刷新</dt>
+                <dd>2s</dd>
+            </div>
+            <div class="metric">
+                <dt>指标维度</dt>
+                <dd>9</dd>
+            </div>
+        </dl>
 
-    <ul class="nav nav-tabs">
-        <li class="active" id="tab-login"><a onclick="switchTab('login')">用户登录</a></li>
-        <li id="tab-register"><a onclick="switchTab('register')">账号注册</a></li>
-    </ul>
+        <div class="brand-foot">© 2026 河南省交通大数据分析平台</div>
+    </section>
 
-    <form id="login-form">
-        <div class="form-group">
-            <input type="text" class="form-control" placeholder="请输入用户名">
-            <i class="fas fa-user input-icon"></i>
+    <!-- 右侧登录卡 -->
+    <section class="login-card">
+        <div class="card-header">
+            <h2 id="card-title">欢迎回来</h2>
+            <p class="sub">请使用平台账号登录，或注册新账号</p>
         </div>
-        <div class="form-group">
-            <input type="password" class="form-control" placeholder="请输入密码">
-            <i class="fas fa-lock input-icon"></i>
-        </div>
-        <button type="button" class="btn btn-submit" onclick="handleLogin()">登 录</button>
-        <div class="footer-links">
-            <a>忘记密码?</a>
-        </div>
-    </form>
 
-    <form id="register-form" class="hide">
-        <div class="form-group">
-            <input type="text" class="form-control" placeholder="设置用户名">
-            <i class="fas fa-user input-icon"></i>
+        <div class="tabs" data-active="login" role="tablist" aria-label="登录或注册">
+            <div class="tabs-thumb" aria-hidden="true"></div>
+            <button type="button" role="tab" id="tab-login" aria-selected="true" aria-controls="login-form">登录</button>
+            <button type="button" role="tab" id="tab-register" aria-selected="false" aria-controls="register-form">注册</button>
         </div>
-        <div class="form-group">
-            <input type="password" class="form-control" placeholder="设置密码">
-            <i class="fas fa-lock input-icon"></i>
-        </div>
-        <div class="form-group">
-            <input type="password" class="form-control" placeholder="确认密码">
-            <i class="fas fa-check-circle input-icon"></i>
-        </div>
-        <button type="button" class="btn btn-submit" onclick="handleRegister()">注 册</button>
-        <div class="footer-links">
-            注册即代表同意 <a>《平台使用协议》</a>
-        </div>
-    </form>
-</div>
 
-<div class="copyright">© 2025 河南省交通大数据分析平台 All Rights Reserved</div>
+        <!-- 登录表单 -->
+        <form class="form is-active" id="login-form" novalidate>
+            <div class="msg" id="login-error" role="alert" data-type="error"></div>
+
+            <div class="field">
+                <label for="login-username">用户名</label>
+                <input type="text" id="login-username" name="username" aria-label="用户名"
+                       placeholder="请输入用户名" autocomplete="username" required>
+            </div>
+
+            <div class="field">
+                <label for="login-password">密码</label>
+                <input type="password" id="login-password" name="password" aria-label="密码"
+                       placeholder="请输入密码" autocomplete="current-password" required>
+                <button type="button" class="toggle-password" aria-label="显示密码" data-target="login-password">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+            </div>
+
+            <button type="submit" class="submit">
+                <span class="spinner" aria-hidden="true"></span><span class="label">登 录</span>
+            </button>
+
+            <p class="hint">忘记密码请联系管理员重置</p>
+        </form>
+
+        <!-- 注册表单 -->
+        <form class="form" id="register-form" novalidate>
+            <div class="msg" id="register-error" role="alert" data-type="error"></div>
+
+            <div class="field">
+                <label for="register-username">用户名</label>
+                <input type="text" id="register-username" name="username" aria-label="用户名"
+                       placeholder="设置用户名" autocomplete="username" required>
+            </div>
+
+            <div class="field">
+                <label for="register-password">密码</label>
+                <input type="password" id="register-password" name="password" aria-label="密码"
+                       placeholder="设置密码（至少 6 位）" autocomplete="new-password" required>
+                <button type="button" class="toggle-password" aria-label="显示密码" data-target="register-password">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+                <div class="strength" id="strength" data-score="0" aria-hidden="true">
+                    <i></i><i></i><i></i><i></i>
+                </div>
+            </div>
+
+            <div class="field">
+                <label for="register-confirm">确认密码</label>
+                <input type="password" id="register-confirm" name="confirm" aria-label="确认密码"
+                       placeholder="再次输入密码" autocomplete="new-password" required>
+                <button type="button" class="toggle-password" aria-label="显示密码" data-target="register-confirm">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </button>
+            </div>
+
+            <button type="submit" class="submit">
+                <span class="spinner" aria-hidden="true"></span><span class="label">注 册</span>
+            </button>
+
+            <p class="hint">注册后需管理员审核通过方可登录</p>
+        </form>
+    </section>
+</main>
 
 <script>
-    // 切换登录/注册 Tab
-    function switchTab(type) {
-        if (type === 'login') {
-            $('#tab-login').addClass('active');
-            $('#tab-register').removeClass('active');
-            $('#login-form').fadeIn(300).removeClass('hide');
-            $('#register-form').hide();
-        } else {
-            $('#tab-register').addClass('active');
-            $('#tab-login').removeClass('active');
-            $('#register-form').fadeIn(300).removeClass('hide');
-            $('#login-form').hide();
-        }
+(function () {
+    'use strict';
+
+    var tabsEl = document.querySelector('.tabs');
+    var tabLogin = document.getElementById('tab-login');
+    var tabRegister = document.getElementById('tab-register');
+    var loginForm = document.getElementById('login-form');
+    var registerForm = document.getElementById('register-form');
+    var cardTitle = document.getElementById('card-title');
+
+    function switchTab(which) {
+        var isLogin = which === 'login';
+        tabsEl.setAttribute('data-active', which);
+        tabLogin.setAttribute('aria-selected', String(isLogin));
+        tabRegister.setAttribute('aria-selected', String(!isLogin));
+        loginForm.classList.toggle('is-active', isLogin);
+        registerForm.classList.toggle('is-active', !isLogin);
+        cardTitle.textContent = isLogin ? '欢迎回来' : '创建账号';
+
+        clearMessage(document.getElementById('login-error'));
+        clearMessage(document.getElementById('register-error'));
+
+        var first = (isLogin ? loginForm : registerForm).querySelector('input');
+        if (first) first.focus({ preventScroll: true });
     }
 
-    // 真实登录逻辑
-    function handleLogin() {
-        var username = $('#login-form input[type="text"]').val();
-        var password = $('#login-form input[type="password"]').val();
+    tabLogin.addEventListener('click', function () { switchTab('login'); });
+    tabRegister.addEventListener('click', function () { switchTab('register'); });
 
-        if(!username || !password) {
-            alert("请输入用户名和密码");
-            return;
-        }
+    function showMessage(el, text, type) {
+        el.textContent = text;
+        el.setAttribute('data-type', type || 'error');
+        el.classList.add('is-visible');
+    }
 
-        var $btn = $('#login-form .btn-submit');
-        $btn.text('登录中...').css('opacity', '0.7');
+    function clearMessage(el) {
+        el.textContent = '';
+        el.classList.remove('is-visible');
+    }
 
-        $.ajax({
-            url: "/loginAction",
-            type: "POST",
-            data: {
-                username: username,
-                password: password
-            },
-            success: function(res) {
-                if (res.success) {
-                    window.location.href = 'index.html';
-                } else {
-                    alert(res.msg);
-                    $btn.text('登 录').css('opacity', '1');
-                }
-            },
-            error: function() {
-                alert("服务器连接失败");
-                $btn.text('登 录').css('opacity', '1');
-            }
+    document.querySelectorAll('.toggle-password').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var input = document.getElementById(btn.getAttribute('data-target'));
+            if (!input) return;
+            var toText = input.type === 'password';
+            input.type = toText ? 'text' : 'password';
+            btn.setAttribute('aria-label', toText ? '隐藏密码' : '显示密码');
         });
-    }
-
-    // 真实注册逻辑
-    function handleRegister() {
-        var username = $('#register-form input[type="text"]').eq(0).val();
-        var password = $('#register-form input[type="password"]').eq(0).val();
-        var confirm  = $('#register-form input[type="password"]').eq(1).val();
-
-        if (password !== confirm) {
-            alert("两次密码输入不一致");
-            return;
-        }
-
-        $.ajax({
-            url: "/registerAction",
-            type: "POST",
-            data: {
-                username: username,
-                password: password
-            },
-            success: function(res) {
-                alert(res.msg);
-                if(res.success) {
-                    switchTab('login');
-                }
-            },
-            error: function() {
-                alert("注册请求失败");
-            }
-        });
-    }
-
-    // 粒子背景特效
-    $(document).ready(function() {
-        var canvas = document.getElementById("canvas-bg");
-        var ctx = canvas.getContext("2d");
-        var w = canvas.width = window.innerWidth;
-        var h = canvas.height = window.innerHeight;
-        var particles = [];
-        var properties = {
-            bgColor: 'rgba(10, 22, 40, 1)',
-            particleColor: 'rgba(0, 180, 255, 0.6)',
-            particleRadius: 2,
-            particleCount: 80,
-            lineLength: 120,
-            particleLife: 5
-        };
-
-        window.onresize = function() {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-        };
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * w;
-                this.y = Math.random() * h;
-                this.velocityX = (Math.random() - 0.5) * properties.particleLife * 0.2;
-                this.velocityY = (Math.random() - 0.5) * properties.particleLife * 0.2;
-            }
-            position() {
-                if (this.x + this.velocityX > w || this.x + this.velocityX < 0) this.velocityX *= -1;
-                if (this.y + this.velocityY > h || this.y + this.velocityY < 0) this.velocityY *= -1;
-                this.x += this.velocityX;
-                this.y += this.velocityY;
-            }
-            reDraw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, properties.particleRadius, 0, Math.PI * 2);
-                ctx.closePath();
-                ctx.fillStyle = properties.particleColor;
-                ctx.fill();
-            }
-        }
-
-        function reDrawBackground() {
-            ctx.fillStyle = properties.bgColor;
-            ctx.fillRect(0, 0, w, h);
-        }
-
-        function drawLines() {
-            for (var i = 0; i < particles.length; i++) {
-                for (var j = i + 1; j < particles.length; j++) {
-                    var dx = particles[i].x - particles[j].x;
-                    var dy = particles[i].y - particles[j].y;
-                    var length = Math.sqrt(dx * dx + dy * dy);
-                    if (length < properties.lineLength) {
-                        var opacity = (1 - length / properties.lineLength) * 0.5;
-                        ctx.lineWidth = 0.5;
-                        ctx.strokeStyle = 'rgba(0, 180, 255, ' + opacity + ')';
-                        ctx.beginPath();
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.stroke();
-                    }
-                }
-            }
-        }
-
-        function reDrawParticles() {
-            for (var i in particles) {
-                particles[i].position();
-                particles[i].reDraw();
-            }
-        }
-
-        function loop() {
-            reDrawBackground();
-            reDrawParticles();
-            drawLines();
-            requestAnimationFrame(loop);
-        }
-
-        function init() {
-            for (var i = 0; i < properties.particleCount; i++) {
-                particles.push(new Particle());
-            }
-            loop();
-        }
-
-        init();
     });
+
+    var strengthEl = document.getElementById('strength');
+    var registerPassword = document.getElementById('register-password');
+
+    function scorePassword(v) {
+        var score = 0;
+        if (v.length >= 6) score++;
+        if (v.length >= 10) score++;
+        if (/[A-Za-z]/.test(v) && /\d/.test(v)) score++;
+        if (/[^A-Za-z0-9]/.test(v)) score++;
+        return Math.min(score, 4);
+    }
+
+    registerPassword.addEventListener('input', function () {
+        strengthEl.setAttribute('data-score', String(scorePassword(registerPassword.value)));
+    });
+
+    function setLoading(form, loading) {
+        var btn = form.querySelector('.submit');
+        btn.disabled = loading;
+        btn.classList.toggle('is-loading', loading);
+        btn.querySelector('.label').textContent = loading
+            ? (form.id === 'login-form' ? '登录中…' : '提交中…')
+            : (form.id === 'login-form' ? '登 录' : '注 册');
+    }
+
+    function submitForm(form, url, prefix) {
+        var errEl = document.getElementById(prefix + '-error');
+        clearMessage(errEl);
+
+        var username = document.getElementById(prefix + '-username').value.trim();
+        var password = document.getElementById(prefix + '-password').value;
+        var confirm = document.getElementById(prefix + '-confirm')?.value;
+
+        if (prefix === 'login') {
+            if (!username || !password) {
+                showMessage(errEl, '请输入用户名和密码', 'error');
+                return;
+            }
+        } else {
+            if (!username) {
+                showMessage(errEl, '请设置用户名', 'error');
+                return;
+            }
+            if (!password || password.length < 6) {
+                showMessage(errEl, '密码至少 6 位', 'error');
+                return;
+            }
+            if (password !== confirm) {
+                showMessage(errEl, '两次密码输入不一致', 'error');
+                return;
+            }
+        }
+
+        setLoading(form, true);
+
+        var body = new URLSearchParams();
+        body.set('username', username);
+        body.set('password', password);
+
+        fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8' },
+            body: body.toString()
+        })
+            .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+            .then(function (res) {
+                if (res && res.success) {
+                    if (prefix === 'login') {
+                        if (res.token) {
+                            window.localStorage.setItem('traffic_jwt', res.token);
+                        }
+                        window.location.href = 'index.html';
+                    } else {
+                        showMessage(errEl, res.msg || '注册成功，等待审核', 'success');
+                        registerForm.reset();
+                        strengthEl.setAttribute('data-score', '0');
+                    }
+                    return;
+                }
+                showMessage(errEl, (res && res.msg) || '操作失败', 'error');
+            })
+            .catch(function () {
+                showMessage(errEl, '服务器连接失败，请稍后重试', 'error');
+            })
+            .then(function () { setLoading(form, false); });
+    }
+
+    loginForm.addEventListener('submit', function (e) { e.preventDefault(); submitForm(loginForm, '/loginAction', 'login'); });
+    registerForm.addEventListener('submit', function (e) { e.preventDefault(); submitForm(registerForm, '/registerAction', 'register'); });
+
+    var initial = document.getElementById('login-username');
+    if (initial) initial.focus({ preventScroll: true });
+})();
 </script>
 </body>
 </html>

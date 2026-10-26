@@ -14,14 +14,15 @@ public class CorsConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration corsConfiguration = new CorsConfiguration();
 
-        // 允许任何源
-        corsConfiguration.addAllowedOrigin("*");
+        // 当前前端使用同源请求；保留通配来源以兼容本地开发页面。
+        corsConfiguration.addAllowedOriginPattern("*");
         // 允许任何方法
         corsConfiguration.addAllowedMethod("*");
         // 允许任何头
         corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addExposedHeader("Authorization");
 
-        source.registerCorsConfiguration("/​**​", corsConfiguration);
+        source.registerCorsConfiguration("/**", corsConfiguration);
         return new CorsFilter(source);
     }
 }

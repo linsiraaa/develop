@@ -643,6 +643,15 @@ var maxVehicleTotal = 1;
 var maxTodayOnline = 1;
 var maxTodayAlarm = 1;
 
+// 接口返回车辆数量（单位：万辆）；第一行换算为亿辆，固定保留三位小数
+function formatVehiclesInYi(value) {
+    return (Number(value || 0) / 10000).toFixed(3) + '亿';
+}
+
+function formatRingLabel(title, count) {
+    return title + '\n' + formatVehiclesInYi(count) + '\n' + Math.round(Number(count)).toLocaleString('zh-CN') + '万辆';
+}
+
 // 初始化图表实例（确保在DOM加载完成后执行）
 $(document).ready(function() {
     // 初始化三个饼图实例
@@ -658,9 +667,13 @@ $(document).ready(function() {
                 text: titleText,
                 left: 'center',
                 top: 'center',
+                width: 78,
+                overflow: 'break',
+                textAlign: 'center',
                 textStyle: {
                     color: '#fff',
-                    fontSize: 14
+                    fontSize: 10,
+                    lineHeight: 13
                 }
             },
             series: [{
@@ -717,19 +730,19 @@ $(document).ready(function() {
         var alarmPercent = (data.todayAlarm / maxTodayAlarm) * 100;
 
         myChart5.setOption(createRingOption(
-            '车辆总数：' + data.vehicleTotal + '万辆',
+            formatRingLabel('车辆总数', data.vehicleTotal),
             totalPercent,
             '#1d54f7', '#68eaf9'
         ));
 
         myChart6.setOption(createRingOption(
-            '今日上线：' + data.todayOnline + '万辆',
+            formatRingLabel('今日上线', data.todayOnline),
             onlinePercent,
             '#02df94', '#28d3d0'
         ));
 
         myChart7.setOption(createRingOption(
-            '今日报警：' + data.todayAlarm + '万辆',
+            formatRingLabel('今日报警', data.todayAlarm),
             alarmPercent,
             '#eb3600', '#d0a00e'
         ));

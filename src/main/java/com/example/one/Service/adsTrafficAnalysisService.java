@@ -28,15 +28,15 @@ public class adsTrafficAnalysisService {
                                 Collectors.toList(),
                                 list -> {
                                     long currentSum = list.stream()
-                                            .mapToLong(AdsTrafficFlowAnalysis::getCurrentFlow)
+                                            .mapToLong(a -> zeroIfNull(a.getCurrentFlow()))
                                             .sum();
                                     long lastYearSum = list.stream()
-                                            .mapToLong(AdsTrafficFlowAnalysis::getLastYearFlow)
+                                            .mapToLong(a -> zeroIfNull(a.getLastYearFlow()))
                                             .sum();
                                     double yoy = calculateGrowth(currentSum, lastYearSum);
 
                                     // 防御性处理：避免空指针（假设至少有一条记录）
-                                    long prevMonthFlow = list.isEmpty() ? 0L : list.get(0).getPrevMonthFlow();
+                                    long prevMonthFlow = list.isEmpty() ? 0L : zeroIfNull(list.get(0).getPrevMonthFlow());
                                     double mom = calculateGrowth(currentSum, prevMonthFlow);
 
                                     // 构建统计Map
@@ -56,6 +56,14 @@ public class adsTrafficAnalysisService {
         return result;
     }
 
+    private static long zeroIfNull(Long value) {
+        return value == null ? 0L : value;
+    }
+
+    private static double zeroIfNull(Double value) {
+        return value == null ? 0.0 : value;
+    }
+
     private double calculateGrowth(long current, long previous) {
         return previous == 0 ? 0 : ((double)(current - previous)/previous)*100;
     }
@@ -63,10 +71,10 @@ public class adsTrafficAnalysisService {
     private Map<String, Double> calculateTotals(List<AdsTrafficFlowAnalysis> dataList) {
         return dataList.stream()
                 .flatMap(a -> Stream.of(
-                        new AbstractMap.SimpleEntry<>("highway_current", a.getTypeName().equals("高速公路") ? a.getCurrentFlow() : 0),
-                        new AbstractMap.SimpleEntry<>("urban_current", a.getTypeName().equals("城镇公路") ? a.getCurrentFlow() : 0),
-                        new AbstractMap.SimpleEntry<>("highway_yoy", a.getTypeName().equals("高速公路") ? a.getYoyGrowthPercent() : 0),
-                        new AbstractMap.SimpleEntry<>("urban_yoy", a.getTypeName().equals("城镇公路") ? a.getYoyGrowthPercent() : 0)
+                        new AbstractMap.SimpleEntry<>("highway_current", a.getTypeName().equals("高速公路") ? zeroIfNull(a.getCurrentFlow()) : 0),
+                        new AbstractMap.SimpleEntry<>("urban_current", a.getTypeName().equals("城镇公路") ? zeroIfNull(a.getCurrentFlow()) : 0),
+                        new AbstractMap.SimpleEntry<>("highway_yoy", a.getTypeName().equals("高速公路") ? zeroIfNull(a.getYoyGrowthPercent()) : 0),
+                        new AbstractMap.SimpleEntry<>("urban_yoy", a.getTypeName().equals("城镇公路") ? zeroIfNull(a.getYoyGrowthPercent()) : 0)
                 ))
                 // 修改后（显式类型转换）
                 .collect(Collectors.groupingBy(
